@@ -30,6 +30,8 @@
 
 package org.objectweb.asm.commons;
 
+import org.objectweb.asm.*;
+
 import java.util.*;
 
 /**
@@ -65,4 +67,19 @@ public class SimpleRemapper extends Remapper {
 	public String map(String key) {
 		return mapping.get(key);
 	}
+
+	@Override
+	public String mapInvokeDynamicMethodName(String name, String desc) {
+		Type type = Type.getMethodType(desc);
+		String owner = type.getReturnType().getInternalName();
+		for (String s : mapping.keySet()) {
+			if (s.startsWith(owner + "." + name + "(")) {
+				String mapped = map(s);
+				if (mapped != null)
+					return mapped;
+			}
+		}
+		return name;
+	}
+
 }

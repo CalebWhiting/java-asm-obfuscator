@@ -3,7 +3,9 @@ package com.revtek.rasmo.obfuscate;
 import com.revtek.rasmo.util.*;
 import org.objectweb.asm.commons.*;
 import org.objectweb.asm.tree.*;
+import org.objectweb.asm.util.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.*;
 
