@@ -23,7 +23,7 @@ public class ScrambleMethods implements Processor {
 	public void process(Map<String, ClassNode> classMap) {
 		this.classMap = classMap;
 		// loads all jre libraries from 'java.class.path' system property
-		this.env = new JRE();
+		this.env = JRE.getJRE();
 		// todo: add more in-depth verification
 		List<String> pass = Arrays.asList("main", "<init>", "<clinit>", "createUI");
 		// reset the unique string generator, so that is starts at 'a'

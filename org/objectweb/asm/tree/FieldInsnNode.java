@@ -102,4 +102,10 @@ public class FieldInsnNode extends AbstractInsnNode {
 		return new FieldInsnNode(opcode, owner, name, desc)
 				.cloneAnnotations(this);
 	}
+
+	public boolean isCallTo(ClassNode owner, FieldNode field) {
+		return this.owner.equals(owner.name) &&
+				field.name.equals(name) && field.desc.equals(desc);
+	}
+
 }

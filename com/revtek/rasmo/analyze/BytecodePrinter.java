@@ -15,7 +15,7 @@ public class BytecodePrinter extends ClassVisitor {
 
 	private final PrintStream writer;
 
-	private int tab;
+	public int tab;
 
 	private static final Map<Integer, String> OPCODES;
 
@@ -180,6 +180,14 @@ public class BytecodePrinter extends ClassVisitor {
 		for (Object chunk : chunks)
 			s += chunk;
 		writer.println(s);
+	}
+
+	public MethodVisitor getMethodPrinter() {
+		return new MethodPrinter();
+	}
+
+	public FieldVisitor getFieldPrinter() {
+		return new FieldPrinter();
 	}
 
 	private class MethodPrinter extends MethodVisitor {

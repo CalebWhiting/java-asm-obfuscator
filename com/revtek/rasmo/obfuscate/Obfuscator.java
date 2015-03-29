@@ -16,7 +16,7 @@ public class Obfuscator {
 	private final Map<String, ClassNode> classMap = new HashMap<>();
 	private final Map<String, byte[]> files = new HashMap<>();
 
-	private int readFlags = ClassReader.SKIP_DEBUG | ClassReader.EXPAND_FRAMES;
+	private int readFlags = ClassReader.EXPAND_FRAMES;
 	private int writeFlags = ClassWriter.COMPUTE_MAXS;
 
 	public void supply(JarFile jar) {

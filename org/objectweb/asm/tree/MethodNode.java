@@ -587,14 +587,14 @@ public class MethodNode extends MethodVisitor {
 	 * @param l a Label.
 	 * @return the LabelNode corresponding to l.
 	 */
-	protected LabelNode getLabelNode(final Label l) {
+	public LabelNode getLabelNode(final Label l) {
 		if (!(l.info instanceof LabelNode)) {
 			l.info = new LabelNode();
 		}
 		return (LabelNode) l.info;
 	}
 
-	private LabelNode[] getLabelNodes(final Label[] l) {
+	public LabelNode[] getLabelNodes(final Label[] l) {
 		LabelNode[] nodes = new LabelNode[l.length];
 		for (int i = 0; i < l.length; ++i) {
 			nodes[i] = getLabelNode(l[i]);
@@ -602,7 +602,7 @@ public class MethodNode extends MethodVisitor {
 		return nodes;
 	}
 
-	private Object[] getLabelNodes(final Object[] objs) {
+	public Object[] getLabelNodes(final Object[] objs) {
 		Object[] nodes = new Object[objs.length];
 		for (int i = 0; i < objs.length; ++i) {
 			Object o = objs[i];

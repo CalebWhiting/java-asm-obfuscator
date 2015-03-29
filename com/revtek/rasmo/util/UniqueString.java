@@ -5,16 +5,22 @@ package com.revtek.rasmo.util;
  */
 public class UniqueString {
 
+	private static final String FIRST;
+
+	static {
+		FIRST = "a";
+	}
+
 	private static String text = "";
 
 	public static void reset() {
-		text = "";
+		text = FIRST;
 	}
 
 	public static String next() {
 		int len = text.length();
 		if (len == 0)
-			return text = "a";
+			return text = FIRST;
 		boolean alphaNum = false;
 		int alphaNumPos = -1;
 		for (char c : text.toCharArray()) {

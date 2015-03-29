@@ -1,7 +1,6 @@
 package demo;
 
 import com.revtek.rasmo.obfuscate.*;
-import org.objectweb.asm.*;
 
 import java.io.*;
 import java.util.jar.*;
@@ -18,6 +17,7 @@ public class Main {
 			obfuscator.apply(new ScrambleClasses("com.runebox", "com.runebox.Launch"));
 			obfuscator.apply(new ScrambleFields());
 			obfuscator.apply(new ScrambleMethods());
+			obfuscator.apply(new InlineFields());
 			try (JarOutputStream out = new JarOutputStream(new FileOutputStream("./test_.jar"))) {
 				obfuscator.write(out);
 			}

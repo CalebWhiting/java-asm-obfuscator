@@ -12,8 +12,9 @@ import java.util.jar.*;
  */
 public class JRE {
 
+	private static JRE jre;
+
 	private final Map<String, ClassNode> classMap = new HashMap<>();
-	private final Map<String, byte[]> files = new HashMap<>();
 
 	public JRE() {
 		String[] libraries = System.getProperty("java.class.path").split(";");
@@ -27,16 +28,13 @@ public class JRE {
 				while (entries.hasMoreElements()) {
 					JarEntry entry = entries.nextElement();
 					try (InputStream in = jar.getInputStream(entry)) {
-						byte[] bytes = IO.read(in);
 						if (!entry.getName().endsWith(".class")) {
-							files.put(entry.getName(), bytes);
 							continue;
 						}
+						byte[] bytes = IO.read(in);
 						ClassNode c = new ClassNode();
-						new ClassReader(bytes).accept(c, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+						new ClassReader(bytes).accept(c, 7);
 						classMap.put(c.name, c);
-					} catch (IOException e) {
-						e.printStackTrace();
 					}
 				}
 			} catch (IOException e) {
@@ -45,12 +43,14 @@ public class JRE {
 		}
 	}
 
-	public Map<String, ClassNode> getClassMap() {
-		return classMap;
+	public static JRE getJRE() {
+		if (jre == null)
+			jre = new JRE();
+		return jre;
 	}
 
-	public Map<String, byte[]> getFiles() {
-		return files;
+	public Map<String, ClassNode> getClassMap() {
+		return classMap;
 	}
 
 }
