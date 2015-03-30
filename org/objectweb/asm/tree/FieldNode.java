@@ -30,7 +30,7 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.util.*;
+import org.objectweb.asm.query.*;
 
 import java.util.*;
 

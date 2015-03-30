@@ -30,7 +30,7 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
-import org.objectweb.asm.util.*;
+import org.objectweb.asm.query.*;
 
 import java.util.*;
 
@@ -165,7 +165,7 @@ public abstract class AbstractInsnNode implements Queryable {
 	 * value of -1 indicates that this instruction does not belong to any
 	 * {@link org.objectweb.asm.tree.InsnList}.
 	 */
-	int index;
+	public int index;
 
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.AbstractInsnNode}.

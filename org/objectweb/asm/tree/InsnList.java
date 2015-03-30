@@ -32,6 +32,7 @@ package org.objectweb.asm.tree;
 import org.objectweb.asm.*;
 
 import java.util.*;
+import java.util.function.*;
 
 /**
  * A doubly linked list of {@link AbstractInsnNode} objects. <i>This
@@ -590,4 +591,14 @@ public class InsnList {
 			prev = (AbstractInsnNode) o;
 		}
 	}
+
+	public <T> void forEach(Class<T> type, Consumer<T> consumer) {
+		for (AbstractInsnNode node : toArray()) {
+			if (type.isInstance(node)) {
+				//noinspection unchecked
+				consumer.accept((T) node);
+			}
+		}
+	}
+
 }

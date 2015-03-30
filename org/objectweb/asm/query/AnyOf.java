@@ -1,18 +1,18 @@
-package org.objectweb.asm.util;
+package org.objectweb.asm.query;
 
 /**
  * @author Caleb Whiting
  */
-public class Query {
+public class AnyOf {
 
 	private final Object[] values;
 
-	public Query(Object... values) {
+	public AnyOf(Object... values) {
 		this.values = values;
 	}
 
 	public Object[] values() {
-		return this.values;
+		return values;
 	}
 
 }

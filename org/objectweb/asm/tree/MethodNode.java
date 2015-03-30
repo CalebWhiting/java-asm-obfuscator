@@ -31,7 +31,7 @@ package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.util.*;
+import org.objectweb.asm.query.*;
 
 import java.lang.reflect.*;
 import java.util.*;
