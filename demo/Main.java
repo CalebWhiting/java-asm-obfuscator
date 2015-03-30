@@ -14,11 +14,12 @@ public class Main {
 		try {
 			Obfuscator obfuscator = new Obfuscator();
 			obfuscator.supply(new JarFile("./test.jar"));
-			/*obfuscator.apply(new ScrambleClasses("com.runebox", "com.runebox.Launch"));
+			obfuscator.apply(new ScrambleStrings());
+			obfuscator.apply(new ScrambleClasses("com.runebox", "com.runebox.Launch"));
 			obfuscator.apply(new ScrambleFields());
 			obfuscator.apply(new ScrambleMethods());
-			obfuscator.apply(new InlineFields());*/
-			obfuscator.apply(new ScrambleStrings());
+			obfuscator.apply(new InlineFields());
+			obfuscator.apply(new RemoveDebugInfo());
 			try (JarOutputStream out = new JarOutputStream(new FileOutputStream("./test_.jar"))) {
 				obfuscator.write(out);
 			}

@@ -70,7 +70,7 @@ public class ScrambleStrings implements Processor {
 		mv.visitEnd();
 		return mv;
 	}
-	
+
 	private MethodNode createClinit(ClassNode owner) {
 		MethodNode clinit = owner.getMethod("<clinit>", "()V");
 		if (clinit == null) {

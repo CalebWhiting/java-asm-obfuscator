@@ -46,6 +46,9 @@ public class ScrambleClasses implements Processor {
 			node.accept(adapter);
 			classMap.put(node.name, copy);
 		}
+		for (Object o : remap.entrySet()) {
+			System.out.println("Class Remapping: " + o);
+		}
 	}
 
 }

@@ -172,12 +172,11 @@ public class InlineFields implements Processor {
 	}
 
 	private int publicize(int access) {
-		int[] flags = {Opcodes.ACC_PUBLIC, Opcodes.ACC_PRIVATE, Opcodes.ACC_PROTECTED};
-		for (int flag : flags)
-			if ((access & flag) == flag)
-				access &= ~flag;
-		access |= Opcodes.ACC_PUBLIC;
-		return access;
+		int publicize = Opcodes.ACC_PUBLIC;
+		if (Modifier.isStatic(access)) {
+			publicize |= Opcodes.ACC_STATIC;
+		}
+		return publicize;
 	}
 
 }
