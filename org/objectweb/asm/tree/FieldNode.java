@@ -30,15 +30,14 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 import java.util.*;
 
 /**
  * A node that represents a field.
- *
- * @author Eric Bruneton
  */
-public class FieldNode extends FieldVisitor {
+public class FieldNode extends FieldVisitor implements Queryable {
 
 	/**
 	 * The field's access flags (see {@link org.objectweb.asm.Opcodes}). This
@@ -71,44 +70,30 @@ public class FieldNode extends FieldVisitor {
 	/**
 	 * The runtime visible annotations of this field. This list is a list of
 	 * {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label visible
 	 */
 	public List<AnnotationNode> visibleAnnotations;
 
 	/**
 	 * The runtime invisible annotations of this field. This list is a list of
 	 * {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label invisible
 	 */
 	public List<AnnotationNode> invisibleAnnotations;
 
 	/**
 	 * The runtime visible type annotations of this field. This list is a list
 	 * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label visible
 	 */
 	public List<TypeAnnotationNode> visibleTypeAnnotations;
 
 	/**
 	 * The runtime invisible type annotations of this field. This list is a list
 	 * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label invisible
 	 */
 	public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
 	/**
 	 * The non standard attributes of this field. This list is a list of
 	 * {@link org.objectweb.asm.Attribute} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.Attribute
 	 */
 	public List<Attribute> attrs;
 
@@ -116,19 +101,18 @@ public class FieldNode extends FieldVisitor {
 	 * Constructs a new {@link org.objectweb.asm.tree.FieldNode}. <i>Subclasses must not use this
 	 * constructor</i>. Instead, they must use the
 	 * {@link #FieldNode(int, int, String, String, String, Object)} version.
-	 *
-	 * @param access    the field's access flags (see
-	 *                  {@link org.objectweb.asm.Opcodes}). This parameter also
-	 *                  indicates if the field is synthetic and/or deprecated.
-	 * @param name      the field's name.
-	 * @param desc      the field's descriptor (see {@link org.objectweb.asm.Type
-	 *                  Type}).
-	 * @param signature the field's signature.
-	 * @param value     the field's initial value. This parameter, which may be
-	 *                  <tt>null</tt> if the field does not have an initial value,
-	 *                  must be an {@link Integer}, a {@link Float}, a {@link Long}, a
-	 *                  {@link Double} or a {@link String}.
-	 * @throws IllegalStateException If a subclass calls this constructor.
+	 * <p>
+	 * <p>
+	 * {@link org.objectweb.asm.Opcodes}). This parameter also
+	 * indicates if the field is synthetic and/or deprecated.
+	 * <p>
+	 * <p>
+	 * Type}).
+	 * <p>
+	 * <p>
+	 * <tt>null</tt> if the field does not have an initial value,
+	 * must be an {@link Integer}, a {@link Float}, a {@link Long}, a
+	 * {@link Double} or a {@link String}.
 	 */
 	public FieldNode(final int access, final String name, final String desc,
 	                 final String signature, final Object value) {
@@ -138,23 +122,40 @@ public class FieldNode extends FieldVisitor {
 		}
 	}
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "access":
+				return access;
+			case "name":
+				return name;
+			case "desc":
+				return desc;
+			case "signature":
+				return signature;
+			case "value":
+				return value;
+		}
+		return Queryable.super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.FieldNode}. <i>Subclasses must not use this
 	 * constructor</i>.
-	 *
-	 * @param api       the ASM API version implemented by this visitor. Must be one
-	 *                  of {@link org.objectweb.asm.Opcodes#ASM4} or {@link org.objectweb.asm.Opcodes#ASM5}.
-	 * @param access    the field's access flags (see
-	 *                  {@link org.objectweb.asm.Opcodes}). This parameter also
-	 *                  indicates if the field is synthetic and/or deprecated.
-	 * @param name      the field's name.
-	 * @param desc      the field's descriptor (see {@link org.objectweb.asm.Type
-	 *                  Type}).
-	 * @param signature the field's signature.
-	 * @param value     the field's initial value. This parameter, which may be
-	 *                  <tt>null</tt> if the field does not have an initial value,
-	 *                  must be an {@link Integer}, a {@link Float}, a {@link Long}, a
-	 *                  {@link Double} or a {@link String}.
+	 * <p>
+	 * <p>
+	 * of {@link org.objectweb.asm.Opcodes#ASM4} or {@link org.objectweb.asm.Opcodes#ASM5}.
+	 * <p>
+	 * {@link org.objectweb.asm.Opcodes}). This parameter also
+	 * indicates if the field is synthetic and/or deprecated.
+	 * <p>
+	 * <p>
+	 * Type}).
+	 * <p>
+	 * <p>
+	 * <tt>null</tt> if the field does not have an initial value,
+	 * must be an {@link Integer}, a {@link Float}, a {@link Long}, a
+	 * {@link Double} or a {@link String}.
 	 */
 	public FieldNode(final int api, final int access, final String name,
 	                 final String desc, final String signature, final Object value) {
@@ -176,12 +177,12 @@ public class FieldNode extends FieldVisitor {
 		AnnotationNode an = new AnnotationNode(desc);
 		if (visible) {
 			if (visibleAnnotations == null) {
-				visibleAnnotations = new ArrayList<AnnotationNode>(1);
+				visibleAnnotations = new ArrayList<>(1);
 			}
 			visibleAnnotations.add(an);
 		} else {
 			if (invisibleAnnotations == null) {
-				invisibleAnnotations = new ArrayList<AnnotationNode>(1);
+				invisibleAnnotations = new ArrayList<>(1);
 			}
 			invisibleAnnotations.add(an);
 		}
@@ -194,12 +195,12 @@ public class FieldNode extends FieldVisitor {
 		TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
 		if (visible) {
 			if (visibleTypeAnnotations == null) {
-				visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+				visibleTypeAnnotations = new ArrayList<>(1);
 			}
 			visibleTypeAnnotations.add(an);
 		} else {
 			if (invisibleTypeAnnotations == null) {
-				invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+				invisibleTypeAnnotations = new ArrayList<>(1);
 			}
 			invisibleTypeAnnotations.add(an);
 		}
@@ -209,7 +210,7 @@ public class FieldNode extends FieldVisitor {
 	@Override
 	public void visitAttribute(final Attribute attr) {
 		if (attrs == null) {
-			attrs = new ArrayList<Attribute>(1);
+			attrs = new ArrayList<>(1);
 		}
 		attrs.add(attr);
 	}
@@ -227,9 +228,9 @@ public class FieldNode extends FieldVisitor {
 	 * This methods checks that this node, and all its nodes recursively, do not
 	 * contain elements that were introduced in more recent versions of the ASM
 	 * API than the given version.
-	 *
-	 * @param api an ASM API version. Must be one of {@link org.objectweb.asm.Opcodes#ASM4} or
-	 *            {@link org.objectweb.asm.Opcodes#ASM5}.
+	 * <p>
+	 * <p>
+	 * {@link org.objectweb.asm.Opcodes#ASM5}.
 	 */
 	public void check(final int api) {
 		if (api == Opcodes.ASM4) {
@@ -246,8 +247,6 @@ public class FieldNode extends FieldVisitor {
 
 	/**
 	 * Makes the given class visitor visit this field.
-	 *
-	 * @param cv a class visitor.
 	 */
 	public void accept(final ClassVisitor cv) {
 		FieldVisitor fv = cv.visitField(access, name, desc, signature, value);

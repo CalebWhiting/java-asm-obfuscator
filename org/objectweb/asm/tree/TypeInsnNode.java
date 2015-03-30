@@ -60,6 +60,12 @@ public class TypeInsnNode extends AbstractInsnNode {
 		this.desc = desc;
 	}
 
+	@Override
+	public Object query(String key) {
+		if (key.equals("desc")) return desc;
+		return super.query(key);
+	}
+
 	/**
 	 * Sets the opcode of this instruction.
 	 *

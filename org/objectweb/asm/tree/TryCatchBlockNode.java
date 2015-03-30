@@ -30,6 +30,7 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 import java.util.*;
 
@@ -38,7 +39,7 @@ import java.util.*;
  *
  * @author Eric Bruneton
  */
-public class TryCatchBlockNode {
+public class TryCatchBlockNode implements Queryable {
 
 	/**
 	 * Beginning of the exception handler's scope (inclusive).
@@ -65,9 +66,6 @@ public class TryCatchBlockNode {
 	 * The runtime visible type annotations on the exception handler type. This
 	 * list is a list of {@link TypeAnnotationNode} objects. May be
 	 * <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label visible
 	 */
 	public List<TypeAnnotationNode> visibleTypeAnnotations;
 
@@ -75,11 +73,19 @@ public class TryCatchBlockNode {
 	 * The runtime invisible type annotations on the exception handler type.
 	 * This list is a list of {@link TypeAnnotationNode} objects. May be
 	 * <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label invisible
 	 */
 	public List<TypeAnnotationNode> invisibleTypeAnnotations;
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "start": return start.getLabel();
+			case "end": return end.getLabel();
+			case "handler": return handler.getLabel();
+			case "tryType": return type;
+		}
+		return Queryable.super.query(key);
+	}
 
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.TryCatchBlockNode}.

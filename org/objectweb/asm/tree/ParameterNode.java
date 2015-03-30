@@ -30,13 +30,14 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 /**
  * A node that represents a parameter access and name.
  *
  * @author Remi Forax
  */
-public class ParameterNode {
+public class ParameterNode implements Queryable {
 	/**
 	 * The parameter's name.
 	 */
@@ -48,6 +49,15 @@ public class ParameterNode {
 	 * <tt>ACC_MANDATED</tt>.
 	 */
 	public int access;
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "name": return name;
+			case "access": return access;
+		}
+		return Queryable.super.query(key);
+	}
 
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.ParameterNode}.

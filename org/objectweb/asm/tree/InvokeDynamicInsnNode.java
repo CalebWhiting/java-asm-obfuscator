@@ -60,6 +60,21 @@ public class InvokeDynamicInsnNode extends AbstractInsnNode {
 	 */
 	public Object[] bsmArgs;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "name":
+				return name;
+			case "desc":
+				return desc;
+			case "bsm":
+				return bsm;
+			case "bsmArgs":
+				return bsmArgs;
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.InvokeDynamicInsnNode}.
 	 *

@@ -57,6 +57,21 @@ public class FieldInsnNode extends AbstractInsnNode {
 	 */
 	public String desc;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "owner":
+				return owner;
+			case "name":
+				return name;
+			case "desc":
+				return desc;
+			case "path":
+				return owner + "." + name;
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.FieldInsnNode}.
 	 *
@@ -105,7 +120,7 @@ public class FieldInsnNode extends AbstractInsnNode {
 
 	public boolean isCallTo(ClassNode owner, FieldNode field) {
 		return this.owner.equals(owner.name) &&
-				field.name.equals(name) && field.desc.equals(desc);
+		       field.name.equals(name) && field.desc.equals(desc);
 	}
 
 }

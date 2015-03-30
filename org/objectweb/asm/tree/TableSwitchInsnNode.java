@@ -61,6 +61,16 @@ public class TableSwitchInsnNode extends AbstractInsnNode {
 	 */
 	public List<LabelNode> labels;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "min": return min;
+			case "max": return max;
+			case "dflt": return dflt.getLabel();
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.TableSwitchInsnNode}.
 	 *

@@ -50,6 +50,17 @@ public class TypeAnnotationNode extends AnnotationNode {
 	 */
 	public TypePath typePath;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "typeRef":
+				return typeRef;
+			case "typePath":
+				return typePath;
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.AnnotationNode}. <i>Subclasses must not use this
 	 * constructor</i>. Instead, they must use the

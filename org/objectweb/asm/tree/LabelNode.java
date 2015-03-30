@@ -44,6 +44,12 @@ public class LabelNode extends AbstractInsnNode {
 		super(-1);
 	}
 
+	@Override
+	public Object query(String key) {
+		if (key.equals("label")) return label;
+		return super.query(key);
+	}
+
 	public LabelNode(final Label label) {
 		super(-1);
 		this.label = label;

@@ -30,13 +30,14 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 /**
  * A node that represents an inner class.
  *
  * @author Eric Bruneton
  */
-public class InnerClassNode {
+public class InnerClassNode implements Queryable {
 
 	/**
 	 * The internal name of an inner class (see
@@ -83,6 +84,21 @@ public class InnerClassNode {
 		this.outerName = outerName;
 		this.innerName = innerName;
 		this.access = access;
+	}
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "access":
+				return access;
+			case "name":
+				return name;
+			case "outerName":
+				return outerName;
+			case "innerName":
+				return innerName;
+		}
+		return Queryable.super.query(key);
 	}
 
 	/**

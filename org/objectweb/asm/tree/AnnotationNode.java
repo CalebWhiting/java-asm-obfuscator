@@ -30,6 +30,7 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 import java.util.*;
 
@@ -38,7 +39,7 @@ import java.util.*;
  *
  * @author Eric Bruneton
  */
-public class AnnotationNode extends AnnotationVisitor {
+public class AnnotationNode extends AnnotationVisitor implements Queryable {
 
 	/**
 	 * The class descriptor of the annotation class.
@@ -57,6 +58,18 @@ public class AnnotationNode extends AnnotationVisitor {
 	 * pair.
 	 */
 	public List<Object> values;
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "desc":
+				return desc;
+			case "values":
+				return values == null ? new Object[0] :
+				       values.toArray(new Object[values.size()]);
+		}
+		return Queryable.super.query(key);
+	}
 
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.AnnotationNode}. <i>Subclasses must not use this

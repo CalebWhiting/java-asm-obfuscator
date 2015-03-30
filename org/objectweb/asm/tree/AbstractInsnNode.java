@@ -30,6 +30,7 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 import java.util.*;
 
@@ -39,7 +40,7 @@ import java.util.*;
  *
  * @author Eric Bruneton
  */
-public abstract class AbstractInsnNode {
+public abstract class AbstractInsnNode implements Queryable {
 
 	/**
 	 * The type of {@link org.objectweb.asm.tree.InsnNode} instructions.
@@ -174,6 +175,17 @@ public abstract class AbstractInsnNode {
 	protected AbstractInsnNode(final int opcode) {
 		this.opcode = opcode;
 		this.index = -1;
+	}
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "opcode":
+				return opcode;
+			case "type":
+				return getType();
+		}
+		return Queryable.super.query(key);
 	}
 
 	/**

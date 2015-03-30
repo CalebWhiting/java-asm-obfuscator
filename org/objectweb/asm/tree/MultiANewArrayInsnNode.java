@@ -50,6 +50,17 @@ public class MultiANewArrayInsnNode extends AbstractInsnNode {
 	 */
 	public int dims;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "desc":
+				return desc;
+			case "dims":
+				return dims;
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.MultiANewArrayInsnNode}.
 	 *

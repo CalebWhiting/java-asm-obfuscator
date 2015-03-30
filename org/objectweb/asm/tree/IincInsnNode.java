@@ -50,6 +50,17 @@ public class IincInsnNode extends AbstractInsnNode {
 	 */
 	public int incr;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "var":
+				return var;
+			case "incr":
+				return incr;
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.IincInsnNode}.
 	 *

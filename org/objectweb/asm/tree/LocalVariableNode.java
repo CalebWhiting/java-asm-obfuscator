@@ -30,13 +30,14 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 /**
  * A node that represents a local variable declaration.
  *
  * @author Eric Bruneton
  */
-public class LocalVariableNode {
+public class LocalVariableNode implements Queryable {
 
 	/**
 	 * The name of a local variable.
@@ -91,6 +92,19 @@ public class LocalVariableNode {
 		this.start = start;
 		this.end = end;
 		this.index = index;
+	}
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "name": return name;
+			case "desc": return desc;
+			case "signature": return signature;
+			case "start": return start.getLabel();
+			case "end": return end.getLabel();
+			case "index": return index;
+		}
+		return Queryable.super.query(key);
 	}
 
 	/**

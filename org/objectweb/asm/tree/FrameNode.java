@@ -73,6 +73,19 @@ public class FrameNode extends AbstractInsnNode {
 	 */
 	public List<Object> stack;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "frameType":
+				return type;
+			case "stack":
+				return stack.toArray(new Object[stack.size()]);
+			case "local":
+				return local.toArray(new Object[local.size()]);
+		}
+		return super.query(key);
+	}
+
 	private FrameNode() {
 		super(-1);
 	}

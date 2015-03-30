@@ -52,6 +52,15 @@ public class LineNumberNode extends AbstractInsnNode {
 	 */
 	public LabelNode start;
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "line": return line;
+			case "start": return start.getLabel();
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.LineNumberNode}.
 	 *

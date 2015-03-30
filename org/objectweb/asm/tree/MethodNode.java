@@ -31,16 +31,15 @@ package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.util.*;
 
 import java.lang.reflect.*;
 import java.util.*;
 
 /**
  * A node that represents a method.
- *
- * @author Eric Bruneton
  */
-public class MethodNode extends MethodVisitor {
+public class MethodNode extends MethodVisitor implements Queryable {
 
 	/**
 	 * The method's access flags (see {@link org.objectweb.asm.Opcodes}). This field also
@@ -78,44 +77,30 @@ public class MethodNode extends MethodVisitor {
 	/**
 	 * The runtime visible annotations of this method. This list is a list of
 	 * {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label visible
 	 */
 	public List<AnnotationNode> visibleAnnotations;
 
 	/**
 	 * The runtime invisible annotations of this method. This list is a list of
 	 * {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label invisible
 	 */
 	public List<AnnotationNode> invisibleAnnotations;
 
 	/**
 	 * The runtime visible type annotations of this method. This list is a list
 	 * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label visible
 	 */
 	public List<TypeAnnotationNode> visibleTypeAnnotations;
 
 	/**
 	 * The runtime invisible type annotations of this method. This list is a
 	 * list of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label invisible
 	 */
 	public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
 	/**
 	 * The non standard attributes of this method. This list is a list of
 	 * {@link org.objectweb.asm.Attribute} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.Attribute
 	 */
 	public List<Attribute> attrs;
 
@@ -132,35 +117,24 @@ public class MethodNode extends MethodVisitor {
 	/**
 	 * The runtime visible parameter annotations of this method. These lists are
 	 * lists of {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label invisible parameters
 	 */
 	public List<AnnotationNode>[] visibleParameterAnnotations;
 
 	/**
 	 * The runtime invisible parameter annotations of this method. These lists
 	 * are lists of {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label visible parameters
 	 */
 	public List<AnnotationNode>[] invisibleParameterAnnotations;
 
 	/**
 	 * The instructions of this method. This list is a list of
 	 * {@link AbstractInsnNode} objects.
-	 *
-	 * @associates org.objectweb.asm.tree.AbstractInsnNode
-	 * @label instructions
 	 */
 	public InsnList instructions;
 
 	/**
 	 * The try catch blocks of this method. This list is a list of
 	 * {@link TryCatchBlockNode} objects.
-	 *
-	 * @associates org.objectweb.asm.tree.TryCatchBlockNode
 	 */
 	public List<TryCatchBlockNode> tryCatchBlocks;
 
@@ -177,24 +151,18 @@ public class MethodNode extends MethodVisitor {
 	/**
 	 * The local variables of this method. This list is a list of
 	 * {@link LocalVariableNode} objects. May be <tt>null</tt>
-	 *
-	 * @associates org.objectweb.asm.tree.LocalVariableNode
 	 */
 	public List<LocalVariableNode> localVariables;
 
 	/**
 	 * The visible local variable annotations of this method. This list is a
 	 * list of {@link LocalVariableAnnotationNode} objects. May be <tt>null</tt>
-	 *
-	 * @associates org.objectweb.asm.tree.LocalVariableAnnotationNode
 	 */
 	public List<LocalVariableAnnotationNode> visibleLocalVariableAnnotations;
 
 	/**
 	 * The invisible local variable annotations of this method. This list is a
 	 * list of {@link LocalVariableAnnotationNode} objects. May be <tt>null</tt>
-	 *
-	 * @associates org.objectweb.asm.tree.LocalVariableAnnotationNode
 	 */
 	public List<LocalVariableAnnotationNode> invisibleLocalVariableAnnotations;
 
@@ -207,8 +175,6 @@ public class MethodNode extends MethodVisitor {
 	 * Constructs an uninitialized {@link org.objectweb.asm.tree.MethodNode}. <i>Subclasses must not
 	 * use this constructor</i>. Instead, they must use the
 	 * {@link #MethodNode(int)} version.
-	 *
-	 * @throws IllegalStateException If a subclass calls this constructor.
 	 */
 	public MethodNode() {
 		this(Opcodes.ASM5);
@@ -217,11 +183,32 @@ public class MethodNode extends MethodVisitor {
 		}
 	}
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "access":
+				return access;
+			case "name":
+				return name;
+			case "desc":
+				return desc;
+			case "signature":
+				return signature;
+			case "exceptions":
+				return exceptions;
+			case "maxStack":
+				return maxStack;
+			case "maxLocals":
+				return maxLocals;
+		}
+		return Queryable.super.query(key);
+	}
+
 	/**
 	 * Constructs an uninitialized {@link org.objectweb.asm.tree.MethodNode}.
-	 *
-	 * @param api the ASM API version implemented by this visitor. Must be one
-	 *            of {@link org.objectweb.asm.Opcodes#ASM4} or {@link org.objectweb.asm.Opcodes#ASM5}.
+	 * <p>
+	 * <p>
+	 * of {@link org.objectweb.asm.Opcodes#ASM4} or {@link org.objectweb.asm.Opcodes#ASM5}.
 	 */
 	public MethodNode(final int api) {
 		super(api);
@@ -232,17 +219,16 @@ public class MethodNode extends MethodVisitor {
 	 * Constructs a new {@link org.objectweb.asm.tree.MethodNode}. <i>Subclasses must not use this
 	 * constructor</i>. Instead, they must use the
 	 * {@link #MethodNode(int, int, String, String, String, String[])} version.
-	 *
-	 * @param access     the method's access flags (see {@link org.objectweb.asm.Opcodes}). This
-	 *                   parameter also indicates if the method is synthetic and/or
-	 *                   deprecated.
-	 * @param name       the method's name.
-	 * @param desc       the method's descriptor (see {@link org.objectweb.asm.Type}).
-	 * @param signature  the method's signature. May be <tt>null</tt>.
-	 * @param exceptions the internal names of the method's exception classes (see
-	 *                   {@link org.objectweb.asm.Type#getInternalName() getInternalName}). May be
-	 *                   <tt>null</tt>.
-	 * @throws IllegalStateException If a subclass calls this constructor.
+	 * <p>
+	 * <p>
+	 * parameter also indicates if the method is synthetic and/or
+	 * deprecated.
+	 * <p>
+	 * <p>
+	 * <p>
+	 * <p>
+	 * {@link org.objectweb.asm.Type#getInternalName() getInternalName}). May be
+	 * <tt>null</tt>.
 	 */
 	public MethodNode(final int access, final String name, final String desc,
 	                  final String signature, final String[] exceptions) {
@@ -254,18 +240,18 @@ public class MethodNode extends MethodVisitor {
 
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.MethodNode}.
-	 *
-	 * @param api        the ASM API version implemented by this visitor. Must be one
-	 *                   of {@link org.objectweb.asm.Opcodes#ASM4} or {@link org.objectweb.asm.Opcodes#ASM5}.
-	 * @param access     the method's access flags (see {@link org.objectweb.asm.Opcodes}). This
-	 *                   parameter also indicates if the method is synthetic and/or
-	 *                   deprecated.
-	 * @param name       the method's name.
-	 * @param desc       the method's descriptor (see {@link org.objectweb.asm.Type}).
-	 * @param signature  the method's signature. May be <tt>null</tt>.
-	 * @param exceptions the internal names of the method's exception classes (see
-	 *                   {@link org.objectweb.asm.Type#getInternalName() getInternalName}). May be
-	 *                   <tt>null</tt>.
+	 * <p>
+	 * <p>
+	 * of {@link org.objectweb.asm.Opcodes#ASM4} or {@link org.objectweb.asm.Opcodes#ASM5}.
+	 * <p>
+	 * parameter also indicates if the method is synthetic and/or
+	 * deprecated.
+	 * <p>
+	 * <p>
+	 * <p>
+	 * <p>
+	 * {@link org.objectweb.asm.Type#getInternalName() getInternalName}). May be
+	 * <tt>null</tt>.
 	 */
 	public MethodNode(final int api, final int access, final String name,
 	                  final String desc, final String signature, final String[] exceptions) {
@@ -274,13 +260,13 @@ public class MethodNode extends MethodVisitor {
 		this.name = name;
 		this.desc = desc;
 		this.signature = signature;
-		this.exceptions = new ArrayList<String>(exceptions == null ? 0
-		                                                           : exceptions.length);
+		this.exceptions = new ArrayList<>(exceptions == null ? 0
+		                                                     : exceptions.length);
 		boolean isAbstract = (access & Opcodes.ACC_ABSTRACT) != 0;
 		if (!isAbstract) {
-			this.localVariables = new ArrayList<LocalVariableNode>(5);
+			this.localVariables = new ArrayList<>(5);
 		}
-		this.tryCatchBlocks = new ArrayList<TryCatchBlockNode>();
+		this.tryCatchBlocks = new ArrayList<>();
 		if (exceptions != null) {
 			this.exceptions.addAll(Arrays.asList(exceptions));
 		}
@@ -294,7 +280,7 @@ public class MethodNode extends MethodVisitor {
 	@Override
 	public void visitParameter(String name, int access) {
 		if (parameters == null) {
-			parameters = new ArrayList<ParameterNode>(5);
+			parameters = new ArrayList<>(5);
 		}
 		parameters.add(new ParameterNode(name, access));
 	}
@@ -317,12 +303,12 @@ public class MethodNode extends MethodVisitor {
 		AnnotationNode an = new AnnotationNode(desc);
 		if (visible) {
 			if (visibleAnnotations == null) {
-				visibleAnnotations = new ArrayList<AnnotationNode>(1);
+				visibleAnnotations = new ArrayList<>(1);
 			}
 			visibleAnnotations.add(an);
 		} else {
 			if (invisibleAnnotations == null) {
-				invisibleAnnotations = new ArrayList<AnnotationNode>(1);
+				invisibleAnnotations = new ArrayList<>(1);
 			}
 			invisibleAnnotations.add(an);
 		}
@@ -335,12 +321,12 @@ public class MethodNode extends MethodVisitor {
 		TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
 		if (visible) {
 			if (visibleTypeAnnotations == null) {
-				visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+				visibleTypeAnnotations = new ArrayList<>(1);
 			}
 			visibleTypeAnnotations.add(an);
 		} else {
 			if (invisibleTypeAnnotations == null) {
-				invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+				invisibleTypeAnnotations = new ArrayList<>(1);
 			}
 			invisibleTypeAnnotations.add(an);
 		}
@@ -358,7 +344,7 @@ public class MethodNode extends MethodVisitor {
 				visibleParameterAnnotations = (List<AnnotationNode>[]) new List<?>[params];
 			}
 			if (visibleParameterAnnotations[parameter] == null) {
-				visibleParameterAnnotations[parameter] = new ArrayList<AnnotationNode>(
+				visibleParameterAnnotations[parameter] = new ArrayList<>(
 						1);
 			}
 			visibleParameterAnnotations[parameter].add(an);
@@ -368,7 +354,7 @@ public class MethodNode extends MethodVisitor {
 				invisibleParameterAnnotations = (List<AnnotationNode>[]) new List<?>[params];
 			}
 			if (invisibleParameterAnnotations[parameter] == null) {
-				invisibleParameterAnnotations[parameter] = new ArrayList<AnnotationNode>(
+				invisibleParameterAnnotations[parameter] = new ArrayList<>(
 						1);
 			}
 			invisibleParameterAnnotations[parameter].add(an);
@@ -379,7 +365,7 @@ public class MethodNode extends MethodVisitor {
 	@Override
 	public void visitAttribute(final Attribute attr) {
 		if (attrs == null) {
-			attrs = new ArrayList<Attribute>(1);
+			attrs = new ArrayList<>(1);
 		}
 		attrs.add(attr);
 	}
@@ -391,9 +377,9 @@ public class MethodNode extends MethodVisitor {
 	@Override
 	public void visitFrame(final int type, final int nLocal,
 	                       final Object[] local, final int nStack, final Object[] stack) {
-		instructions.add(new FrameNode(type, nLocal, local == null ? null
-		                                                           : getLabelNodes(local), nStack, stack == null ? null
-		                                                                                                         : getLabelNodes(stack)));
+		instructions.add(new FrameNode(type, nLocal,
+				local == null ? null : getLabelNodes(local),
+				nStack, stack == null ? null : getLabelNodes(stack)));
 	}
 
 	@Override
@@ -490,13 +476,13 @@ public class MethodNode extends MethodVisitor {
 		TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
 		if (visible) {
 			if (insn.visibleTypeAnnotations == null) {
-				insn.visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(
+				insn.visibleTypeAnnotations = new ArrayList<>(
 						1);
 			}
 			insn.visibleTypeAnnotations.add(an);
 		} else {
 			if (insn.invisibleTypeAnnotations == null) {
-				insn.invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(
+				insn.invisibleTypeAnnotations = new ArrayList<>(
 						1);
 			}
 			insn.invisibleTypeAnnotations.add(an);
@@ -518,13 +504,13 @@ public class MethodNode extends MethodVisitor {
 		TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
 		if (visible) {
 			if (tcb.visibleTypeAnnotations == null) {
-				tcb.visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(
+				tcb.visibleTypeAnnotations = new ArrayList<>(
 						1);
 			}
 			tcb.visibleTypeAnnotations.add(an);
 		} else {
 			if (tcb.invisibleTypeAnnotations == null) {
-				tcb.invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(
+				tcb.invisibleTypeAnnotations = new ArrayList<>(
 						1);
 			}
 			tcb.invisibleTypeAnnotations.add(an);
@@ -549,13 +535,13 @@ public class MethodNode extends MethodVisitor {
 				index, desc);
 		if (visible) {
 			if (visibleLocalVariableAnnotations == null) {
-				visibleLocalVariableAnnotations = new ArrayList<LocalVariableAnnotationNode>(
+				visibleLocalVariableAnnotations = new ArrayList<>(
 						1);
 			}
 			visibleLocalVariableAnnotations.add(an);
 		} else {
 			if (invisibleLocalVariableAnnotations == null) {
-				invisibleLocalVariableAnnotations = new ArrayList<LocalVariableAnnotationNode>(
+				invisibleLocalVariableAnnotations = new ArrayList<>(
 						1);
 			}
 			invisibleLocalVariableAnnotations.add(an);
@@ -583,9 +569,6 @@ public class MethodNode extends MethodVisitor {
 	 * LabelNode if necessary. The default implementation of this method uses
 	 * the {@link org.objectweb.asm.Label#info} field to store associations between labels and
 	 * label nodes.
-	 *
-	 * @param l a Label.
-	 * @return the LabelNode corresponding to l.
 	 */
 	public LabelNode getLabelNode(final Label l) {
 		if (!(l.info instanceof LabelNode)) {
@@ -623,9 +606,9 @@ public class MethodNode extends MethodVisitor {
 	 * version. This methods checks that this node, and all its nodes
 	 * recursively, do not contain elements that were introduced in more recent
 	 * versions of the ASM API than the given version.
-	 *
-	 * @param api an ASM API version. Must be one of {@link org.objectweb.asm.Opcodes#ASM4} or
-	 *            {@link org.objectweb.asm.Opcodes#ASM5}.
+	 * <p>
+	 * <p>
+	 * {@link org.objectweb.asm.Opcodes#ASM5}.
 	 */
 	public void check(final int api) {
 		if (api == Opcodes.ASM4) {
@@ -679,8 +662,6 @@ public class MethodNode extends MethodVisitor {
 
 	/**
 	 * Makes the given class visitor visit this method.
-	 *
-	 * @param cv a class visitor.
 	 */
 	public void accept(final ClassVisitor cv) {
 		String[] exceptions = new String[this.exceptions.size()];
@@ -694,8 +675,6 @@ public class MethodNode extends MethodVisitor {
 
 	/**
 	 * Makes the given method visitor visit this method.
-	 *
-	 * @param mv a method visitor.
 	 */
 	public void accept(final MethodVisitor mv) {
 		// visits the method parameters

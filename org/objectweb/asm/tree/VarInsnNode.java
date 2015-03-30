@@ -62,6 +62,12 @@ public class VarInsnNode extends AbstractInsnNode {
 		this.var = var;
 	}
 
+	@Override
+	public Object query(String key) {
+		if (key.equals("var")) return var;
+		return super.query(key);
+	}
+
 	/**
 	 * Sets the opcode of this instruction.
 	 *

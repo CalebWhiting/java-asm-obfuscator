@@ -63,6 +63,12 @@ public class JumpInsnNode extends AbstractInsnNode {
 		this.label = label;
 	}
 
+	@Override
+	public Object query(String key) {
+		if (key.equals("label")) return label.getLabel();
+		return super.query(key);
+	}
+
 	/**
 	 * Sets the opcode of this instruction.
 	 *

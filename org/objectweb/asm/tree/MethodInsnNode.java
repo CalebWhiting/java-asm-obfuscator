@@ -80,6 +80,27 @@ public class MethodInsnNode extends AbstractInsnNode {
 		this(opcode, owner, name, desc, opcode == Opcodes.INVOKEINTERFACE);
 	}
 
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "owner":
+				return owner;
+			case "name":
+				return name;
+			case "desc":
+				return desc;
+			case "itf":
+				return itf;
+			case "path":
+				return owner + "." + name;
+			case "return":
+				return Type.getReturnType(desc);
+			case "arguments":
+				return Type.getArgumentTypes(desc);
+		}
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.MethodInsnNode}.
 	 *

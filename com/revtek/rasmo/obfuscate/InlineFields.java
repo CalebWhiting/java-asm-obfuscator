@@ -1,10 +1,10 @@
 package com.revtek.rasmo.obfuscate;
 
-import com.revtek.rasmo.analyze.query.*;
 import com.revtek.rasmo.util.*;
 import org.objectweb.asm.*;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
+import org.objectweb.asm.util.*;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -77,8 +77,8 @@ public class InlineFields implements Processor {
 			Type methodType = Type.getMethodType(method.desc);
 			if (methodType.equals(getType)) {
 				List<AbstractInsnNode> instructions = getRealInstructions(method);
-				NodeQuery[] filters = getPattern(true, owner, field);
-				return matches(instructions, filters);
+				Query[] queries = getPattern(true, owner, field);
+				return matches(instructions, queries);
 			}
 		}
 		return false;
@@ -91,39 +91,39 @@ public class InlineFields implements Processor {
 			Type methodType = Type.getMethodType(method.desc);
 			if (methodType.equals(setType)) {
 				List<AbstractInsnNode> instructions = getRealInstructions(method);
-				NodeQuery[] filters = getPattern(false, owner, field);
-				return matches(instructions, filters);
+				Query[] queries = getPattern(false, owner, field);
+				return matches(instructions, queries);
 			}
 		}
 		return false;
 	}
 
-	private NodeQuery[] getPattern(boolean get, ClassNode owner, FieldNode field) {
+	private Query[] getPattern(boolean get, ClassNode owner, FieldNode field) {
 		Type type = Type.getType(field.desc);
-		List<NodeQuery> predicates = new LinkedList<>();
+		List<Query> queries = new LinkedList<>();
 		boolean local = local(field.access);
 		if (local)
-			predicates.add(new NodeQuery("opcode", Opcodes.ALOAD, "var", 0));
+			queries.add(new Query("opcode", Opcodes.ALOAD, "var", 0));
 		if (get) {
 			int opcode = local ? Opcodes.GETFIELD : Opcodes.GETSTATIC;
-			predicates.add(new NodeQuery("opcode", opcode, "owner", owner.name, "name", field.name, "desc", field.desc));
-			predicates.add(new NodeQuery("opcode", type.getOpcode(Opcodes.IRETURN)));
+			queries.add(new Query("opcode", opcode, "owner", owner.name, "name", field.name, "desc", field.desc));
+			queries.add(new Query("opcode", type.getOpcode(Opcodes.IRETURN)));
 		} else {
 			int opcode = local ? Opcodes.PUTFIELD : Opcodes.PUTSTATIC;
-			predicates.add(new NodeQuery("opcode", type.getOpcode(Opcodes.ILOAD), "var", 0));
-			predicates.add(new NodeQuery("opcode", opcode, "owner", owner.name, "name", field.name, "desc", field.desc));
-			predicates.add(new NodeQuery("opcode", Opcodes.RETURN));
+			queries.add(new Query("opcode", type.getOpcode(Opcodes.ILOAD), "var", 0));
+			queries.add(new Query("opcode", opcode, "owner", owner.name, "name", field.name, "desc", field.desc));
+			queries.add(new Query("opcode", Opcodes.RETURN));
 		}
-		return predicates.toArray(new NodeQuery[predicates.size()]);
+		return queries.toArray(new Query[queries.size()]);
 	}
 
-	private boolean matches(List<AbstractInsnNode> list, NodeQuery... filters) {
-		if (list.size() != filters.length) return false;
+	private boolean matches(List<AbstractInsnNode> list, Query... queries) {
+		if (list.size() != queries.length) return false;
 		for (int i = 0; i < list.size(); i++) {
 			AbstractInsnNode node = list.get(i);
-			NodeQuery filter = filters[i];
-			if (!filter.test(node))
+			if (!node.check(queries[i].values())) {
 				return false;
+			}
 		}
 		return true;
 	}

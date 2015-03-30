@@ -45,6 +45,12 @@ public class IntInsnNode extends AbstractInsnNode {
 	 */
 	public int operand;
 
+	@Override
+	public Object query(String key) {
+		if (key.equals("operand")) return operand;
+		return super.query(key);
+	}
+
 	/**
 	 * Constructs a new {@link org.objectweb.asm.tree.IntInsnNode}.
 	 *

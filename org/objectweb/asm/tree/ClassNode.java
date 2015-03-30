@@ -30,6 +30,7 @@
 package org.objectweb.asm.tree;
 
 import org.objectweb.asm.*;
+import org.objectweb.asm.util.*;
 
 import java.util.*;
 
@@ -38,7 +39,7 @@ import java.util.*;
  *
  * @author Eric Bruneton
  */
-public class ClassNode extends ClassVisitor {
+public class ClassNode extends ClassVisitor implements Queryable {
 
 	/**
 	 * The class version.
@@ -110,68 +111,48 @@ public class ClassNode extends ClassVisitor {
 	/**
 	 * The runtime visible annotations of this class. This list is a list of
 	 * {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label visible
 	 */
 	public List<AnnotationNode> visibleAnnotations;
 
 	/**
 	 * The runtime invisible annotations of this class. This list is a list of
 	 * {@link AnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.AnnotationNode
-	 * @label invisible
 	 */
 	public List<AnnotationNode> invisibleAnnotations;
 
 	/**
 	 * The runtime visible type annotations of this class. This list is a list
 	 * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label visible
 	 */
 	public List<TypeAnnotationNode> visibleTypeAnnotations;
 
 	/**
 	 * The runtime invisible type annotations of this class. This list is a list
 	 * of {@link TypeAnnotationNode} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.tree.TypeAnnotationNode
-	 * @label invisible
 	 */
 	public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
 	/**
 	 * The non standard attributes of this class. This list is a list of
 	 * {@link org.objectweb.asm.Attribute} objects. May be <tt>null</tt>.
-	 *
-	 * @associates org.objectweb.asm.Attribute
 	 */
 	public List<Attribute> attrs;
 
 	/**
 	 * Informations about the inner classes of this class. This list is a list
 	 * of {@link InnerClassNode} objects.
-	 *
-	 * @associates org.objectweb.asm.tree.InnerClassNode
 	 */
 	public List<InnerClassNode> innerClasses;
 
 	/**
 	 * The fields of this class. This list is a list of {@link FieldNode}
 	 * objects.
-	 *
-	 * @associates org.objectweb.asm.tree.FieldNode
 	 */
 	public List<FieldNode> fields;
 
 	/**
 	 * The methods of this class. This list is a list of {@link MethodNode}
 	 * objects.
-	 *
-	 * @associates org.objectweb.asm.tree.MethodNode
 	 */
 	public List<MethodNode> methods;
 
@@ -197,10 +178,29 @@ public class ClassNode extends ClassVisitor {
 	 */
 	public ClassNode(final int api) {
 		super(api);
-		this.interfaces = new ArrayList<String>();
-		this.innerClasses = new ArrayList<InnerClassNode>();
-		this.fields = new ArrayList<FieldNode>();
-		this.methods = new ArrayList<MethodNode>();
+		this.interfaces = new ArrayList<>();
+		this.innerClasses = new ArrayList<>();
+		this.fields = new ArrayList<>();
+		this.methods = new ArrayList<>();
+	}
+
+	@Override
+	public Object query(String key) {
+		switch (key) {
+			case "version":
+				return version;
+			case "access":
+				return access;
+			case "name":
+				return name;
+			case "signature":
+				return signature;
+			case "superName":
+				return superName;
+			case "interfaces":
+				return interfaces.toArray(new String[interfaces.size()]);
+		}
+		return Queryable.super.query(key);
 	}
 
 	// ------------------------------------------------------------------------
@@ -241,12 +241,12 @@ public class ClassNode extends ClassVisitor {
 		AnnotationNode an = new AnnotationNode(desc);
 		if (visible) {
 			if (visibleAnnotations == null) {
-				visibleAnnotations = new ArrayList<AnnotationNode>(1);
+				visibleAnnotations = new ArrayList<>(1);
 			}
 			visibleAnnotations.add(an);
 		} else {
 			if (invisibleAnnotations == null) {
-				invisibleAnnotations = new ArrayList<AnnotationNode>(1);
+				invisibleAnnotations = new ArrayList<>(1);
 			}
 			invisibleAnnotations.add(an);
 		}
@@ -259,12 +259,12 @@ public class ClassNode extends ClassVisitor {
 		TypeAnnotationNode an = new TypeAnnotationNode(typeRef, typePath, desc);
 		if (visible) {
 			if (visibleTypeAnnotations == null) {
-				visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+				visibleTypeAnnotations = new ArrayList<>(1);
 			}
 			visibleTypeAnnotations.add(an);
 		} else {
 			if (invisibleTypeAnnotations == null) {
-				invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+				invisibleTypeAnnotations = new ArrayList<>(1);
 			}
 			invisibleTypeAnnotations.add(an);
 		}
@@ -274,7 +274,7 @@ public class ClassNode extends ClassVisitor {
 	@Override
 	public void visitAttribute(final Attribute attr) {
 		if (attrs == null) {
-			attrs = new ArrayList<Attribute>(1);
+			attrs = new ArrayList<>(1);
 		}
 		attrs.add(attr);
 	}
