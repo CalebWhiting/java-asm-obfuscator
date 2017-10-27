@@ -53,7 +53,7 @@ public class Bootstrap {
 				o.apply(new ScrambleClasses(cl.getOptionValue("package", ""), keep == null ? new String[0] : keep));
 				o.apply(new ScrambleFields());
 				o.apply(new ScrambleMethods());
-				o.apply(new InlineFields());
+				o.apply(new InlineAccessors());
 				o.apply(new RemoveDebugInfo());
 			} catch (Exception e) {
 				log.error("An error occurred while applying transform", e);

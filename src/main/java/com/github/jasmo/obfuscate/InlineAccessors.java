@@ -16,9 +16,9 @@ import java.util.*;
 /**
  * @author Caleb Whiting
  */
-public class InlineFields implements Processor {
+public class InlineAccessors implements Processor {
 
-	private static final Logger log = LogManager.getLogger(InlineFields.class);
+	private static final Logger log = LogManager.getLogger(InlineAccessors.class);
 
 	private Map<String, ClassNode> classMap;
 

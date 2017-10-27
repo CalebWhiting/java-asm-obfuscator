@@ -3,6 +3,7 @@ package com.github.jasmo.obfuscate;
 import com.github.jasmo.util.BytecodeHelper;
 import com.github.jasmo.util.JRE;
 import com.github.jasmo.util.UniqueString;
+import jdk.internal.org.objectweb.asm.Opcodes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.*;
@@ -42,7 +43,7 @@ public class ScrambleMethods implements Processor {
 		for (MethodNode m : methods) {
 			ClassNode owner = getOwner(m);
 			// skip entry points, constructors etc
-			if (pass.contains(m.name)) {
+			if (pass.contains(m.name) || (m.access & Opcodes.ACC_NATIVE) != 0) {
 				log.debug("Skipping method: {}.{}{}", owner.name, m.name, m.desc);
 				continue;
 			}
