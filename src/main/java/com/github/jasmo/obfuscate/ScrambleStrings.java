@@ -1,6 +1,8 @@
 package com.github.jasmo.obfuscate;
 
 import com.github.jasmo.util.BytecodeHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
@@ -13,6 +15,8 @@ import static org.objectweb.asm.Opcodes.*;
  */
 public class ScrambleStrings implements Processor {
 
+	private static final Logger log = LogManager.getLogger(ScrambleStrings.class);
+
 	private static final String FIELD_NAME = "string_store";
 	private static final String CALL_NAME = "unscramble";
 	private static final String CALL_DESC = "(I)Ljava/lang/String;";
@@ -23,7 +27,7 @@ public class ScrambleStrings implements Processor {
 	@Override
 	public void process(Map<String, ClassNode> classMap) {
 		callOwner = (ClassNode) classMap.values().toArray()[new Random().nextInt(classMap.size())];
-		System.out.println("String unscramble @ " + callOwner.name);
+		log.debug("Adding unscramble method to {}.{}{}", callOwner.name, CALL_NAME, CALL_DESC);
 		List<String> stringList = new ArrayList<>();
 		for (ClassNode cn : classMap.values()) {
 			for (MethodNode mn : cn.methods) {
@@ -38,14 +42,15 @@ public class ScrambleStrings implements Processor {
 		Collections.shuffle(stringList);
 		strings = stringList.toArray(new String[stringList.size()]);
 		for (ClassNode cn : classMap.values()) {
-			cn.methods.forEach(this :: scramble);
+			cn.methods.forEach(mn -> scramble(cn, mn));
 		}
 		callOwner.methods.add(getUnscramble());
 		callOwner.fields.add(new FieldNode(ACC_PUBLIC | ACC_STATIC, FIELD_NAME, "[Ljava/lang/String;", null, null));
+		log.debug("Creating {} field containing {} strings", FIELD_NAME, stringList.size());
 		createClinit(callOwner);
 	}
 
-	private void scramble(MethodNode mn) {
+	private void scramble(ClassNode cn, MethodNode mn) {
 		List<LdcInsnNode> ldcNodes = new LinkedList<>();
 		BytecodeHelper.forEach(mn.instructions, LdcInsnNode.class, ldcNodes:: add);
 		for (LdcInsnNode node : ldcNodes) {
@@ -53,6 +58,8 @@ public class ScrambleStrings implements Processor {
 				int index = indexOf(strings, node.cst);
 				if (index == -1)
 					continue;
+				log.debug("Replacing string \"{}\" at {}.{}{} with {}.{}.{}",
+						node.cst, cn.name, mn.name, mn.desc, callOwner.name, CALL_NAME, CALL_DESC);
 				MethodInsnNode call = new MethodInsnNode(Opcodes.INVOKESTATIC, callOwner.name, CALL_NAME, CALL_DESC, false);
 				mn.instructions.set(node, call);
 				mn.instructions.insertBefore(call, getIntegerNode(index));

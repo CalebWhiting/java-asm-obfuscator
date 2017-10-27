@@ -25,7 +25,7 @@ public class JRE {
 			if (!library.endsWith(".jar")) {
 				continue;
 			}
-			log.info("Found JAR: {}", library);
+			log.debug("Found JAR: {}", library);
 			try {
 				JarFile jar = new JarFile(library);
 				Enumeration<JarEntry> entries = jar.entries();

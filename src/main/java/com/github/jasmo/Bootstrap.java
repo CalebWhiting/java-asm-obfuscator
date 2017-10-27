@@ -43,7 +43,7 @@ public class Bootstrap {
 			if (cl.getArgList().size() < 2) {
 				throw new ParseException("Expected at-least two arguments");
 			}
-			System.out.println(cl.getArgList());
+			log.debug("Input: {}, Output: {}", cl.getArgList().get(0), cl.getArgList().get(1));
 			Obfuscator o = new Obfuscator();
 			try {
 				o.supply(Paths.get(cl.getArgList().get(0)));

@@ -1,6 +1,8 @@
 package com.github.jasmo.obfuscate;
 
 import com.github.jasmo.util.UniqueString;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.commons.*;
 import org.objectweb.asm.tree.*;
 
@@ -10,6 +12,8 @@ import java.util.*;
  * @author Caleb Whiting
  */
 public class ScrambleClasses implements Processor {
+
+	private static final Logger log = LogManager.getLogger(ScrambleClasses.class);
 
 	private final String basePackage;
 	private final List<String> skip;
@@ -38,6 +42,7 @@ public class ScrambleClasses implements Processor {
 				name = basePackage + "/" + name;
 			}
 			remap.put(cn.name, name);
+			log.debug("Mapping class {} to {}", cn.name, name);
 		}
 		SimpleRemapper remapper = new SimpleRemapper(remap);
 		for (ClassNode node : new ArrayList<>(classMap.values())) {
@@ -45,9 +50,6 @@ public class ScrambleClasses implements Processor {
 			ClassRemapper adapter = new ClassRemapper(copy, remapper);
 			node.accept(adapter);
 			classMap.put(node.name, copy);
-		}
-		for (Object o : remap.entrySet()) {
-			System.out.println("Class Remapping: " + o);
 		}
 	}
 

@@ -41,10 +41,6 @@ public class ScrambleMethods implements Processor {
 		methods:
 		for (MethodNode m : methods) {
 			ClassNode owner = getOwner(m);
-			if (owner == null) {
-				log.error("Couldn't find method owner? {}{}", m.name, m.desc);
-				throw new RuntimeException();
-			}
 			// skip entry points, constructors etc
 			if (pass.contains(m.name)) {
 				log.debug("Skipping method: {}.{}{}", owner.name, m.name, m.desc);
@@ -60,9 +56,6 @@ public class ScrambleMethods implements Processor {
 					continue methods;
 				// push superclass
 				ClassNode parent = getClassNode(node.superName);
-				if (parent == null) {
-					log.warn("Couldn't find class by name: {}", node.superName);
-				}
 				if (parent != null)
 					stack.push(parent);
 				// push interfaces
@@ -70,9 +63,7 @@ public class ScrambleMethods implements Processor {
 				String[] interfacesNames = node.interfaces.toArray(new String[node.interfaces.size()]);
 				for (int i = 0; i < interfacesNames.length; i++) {
 					ClassNode iface = getClassNode(interfacesNames[i]);
-					if (iface == null) {
-						log.warn("Couldn't find class by name: {}", interfacesNames[i]);
-					} else {
+					if (iface != null) {
 						interfaces.add(iface);
 					}
 				}
@@ -80,7 +71,7 @@ public class ScrambleMethods implements Processor {
 			}
 			// generate obfuscated name
 			String name = UniqueString.next();
-			log.debug("Renaming {}.{}{} to {}{}", owner.name, m.name, m.desc, name, m.desc);
+			log.debug("Mapping method {}.{}{} to {}.{}{}", owner.name, m.name, m.desc, owner.name, name, m.desc);
 			stack.add(owner);
 			// go through all sub-classes, and define the new name
 			// regardless of if the method exists in the given class or not

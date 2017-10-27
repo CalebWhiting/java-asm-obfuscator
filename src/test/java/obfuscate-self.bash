@@ -7,8 +7,8 @@ then
 fi
 mvn package
 java -jar target/java-asm-obfuscator-*.jar \
-     -v \
-     -k com/github/jasmo/Bootstrap \
-     -p com/github/jasmo \
+     --verbose \
+     --keep com/github/jasmo/Bootstrap \
+     --package com/github/jasmo \
      target/classes \
      target/result.jar

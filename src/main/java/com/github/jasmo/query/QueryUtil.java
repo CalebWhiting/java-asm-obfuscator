@@ -56,13 +56,17 @@ public class QueryUtil {
 	}
 
 	private static Object reflectField(Object o, String name) {
-		try {
-			Field field = o.getClass().getDeclaredField(name);
-			field.setAccessible(true);
-			return field.get(o);
-		} catch (ReflectiveOperationException e) {
-			return null;
+		Class c = o.getClass();
+		while (c != null) {
+			try {
+				Field field = c.getDeclaredField(name);
+				field.setAccessible(true);
+				return field.get(o);
+			} catch (ReflectiveOperationException e) {
+			}
+			c = c.getSuperclass();
 		}
+		return null;
 	}
 
 	public static Object query(Object o, String key) {
@@ -265,7 +269,5 @@ public class QueryUtil {
 		}
 		return null;
 	}
-
-
 
 }

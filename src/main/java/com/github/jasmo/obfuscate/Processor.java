@@ -9,6 +9,6 @@ import java.util.*;
  */
 public interface Processor {
 
-	public void process(Map<String, ClassNode> classMap);
+	void process(Map<String, ClassNode> classMap);
 
 }

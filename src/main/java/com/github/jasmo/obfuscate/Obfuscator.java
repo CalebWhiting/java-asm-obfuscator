@@ -117,7 +117,7 @@ public class Obfuscator {
 		}
 	}
 
-	public void writeJar(JarOutputStream out) throws IOException {
+	private void writeJar(JarOutputStream out) throws IOException {
 		for (ClassNode node : getClassMap().values()) {
 			JarEntry entry = new JarEntry(node.name + ".class");
 			out.putNextEntry(entry);
