@@ -62,13 +62,14 @@ public class QueryUtil {
 				Field field = c.getDeclaredField(name);
 				field.setAccessible(true);
 				return field.get(o);
-			} catch (ReflectiveOperationException e) {
+			} catch (ReflectiveOperationException ignore) {
 			}
 			c = c.getSuperclass();
 		}
 		return null;
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	public static Object query(Object o, String key) {
 		if (o instanceof org.objectweb.asm.tree.ClassNode) {
 			org.objectweb.asm.tree.ClassNode b = (org.objectweb.asm.tree.ClassNode) o;

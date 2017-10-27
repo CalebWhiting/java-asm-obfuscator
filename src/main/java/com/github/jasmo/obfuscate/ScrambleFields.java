@@ -1,9 +1,9 @@
 package com.github.jasmo.obfuscate;
 
+import com.github.jasmo.util.BytecodeHelper;
 import com.github.jasmo.util.UniqueString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.commons.*;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
@@ -37,13 +37,7 @@ public class ScrambleFields implements Processor {
 						                     collect(Collectors.toList()));
 			}
 		}
-		SimpleRemapper remapper = new SimpleRemapper(remap);
-		for (ClassNode node : new ArrayList<>(classMap.values())) {
-			ClassNode copy = new ClassNode();
-			ClassRemapper adapter = new ClassRemapper(copy, remapper);
-			node.accept(adapter);
-			classMap.put(node.name, copy);
-		}
+		BytecodeHelper.applyMappings(classMap, remap);
 	}
 
 	private ClassNode getOwner(FieldNode f, Map<String, ClassNode> classMap) {

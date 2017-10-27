@@ -1,13 +1,14 @@
 package com.github.jasmo.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.objectweb.asm.commons.ClassRemapper;
+import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class BytecodeHelper {
-	private static final Logger log = LogManager.getLogger(BytecodeHelper.class);
 
 	public static MethodNode getMethod(ClassNode node, String name, String desc) {
 		return node.methods.stream()
@@ -39,6 +40,16 @@ public class BytecodeHelper {
 
 	public static void forEach(InsnList instructions, Consumer<AbstractInsnNode> consumer) {
 		forEach(instructions, AbstractInsnNode.class, consumer);
+	}
+
+	public static void applyMappings(Map<String, ClassNode> classMap, Map<String, String> remap) {
+		SimpleRemapper remapper = new SimpleRemapper(remap);
+		for (ClassNode node : new ArrayList<>(classMap.values())) {
+			ClassNode copy = new ClassNode();
+			ClassRemapper adapter = new ClassRemapper(copy, remapper);
+			node.accept(adapter);
+			classMap.put(node.name, copy);
+		}
 	}
 
 }

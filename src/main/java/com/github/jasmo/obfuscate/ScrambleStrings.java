@@ -47,7 +47,7 @@ public class ScrambleStrings implements Processor {
 		callOwner.methods.add(getUnscramble());
 		callOwner.fields.add(new FieldNode(ACC_PUBLIC | ACC_STATIC, FIELD_NAME, "[Ljava/lang/String;", null, null));
 		log.debug("Creating {} field containing {} strings", FIELD_NAME, stringList.size());
-		createClinit(callOwner);
+		createStaticConstructor(callOwner);
 	}
 
 	private void scramble(ClassNode cn, MethodNode mn) {
@@ -67,7 +67,7 @@ public class ScrambleStrings implements Processor {
 		}
 	}
 
-	public MethodNode getUnscramble() {
+	private MethodNode getUnscramble() {
 		MethodNode mv = new MethodNode(ACC_PUBLIC | ACC_STATIC, CALL_NAME, CALL_DESC, null, null);
 		mv.visitCode();
 		mv.visitFieldInsn(GETSTATIC, callOwner.name, FIELD_NAME, "[Ljava/lang/String;");
@@ -79,7 +79,7 @@ public class ScrambleStrings implements Processor {
 		return mv;
 	}
 
-	private MethodNode createClinit(ClassNode owner) {
+	private void createStaticConstructor(ClassNode owner) {
 		MethodNode clinit = BytecodeHelper.getMethod(owner, "<clinit>", "()V");
 		if (clinit == null) {
 			clinit = new MethodNode(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
@@ -98,7 +98,6 @@ public class ScrambleStrings implements Processor {
 		}
 		clinit.visitFieldInsn(PUTSTATIC, callOwner.name, FIELD_NAME, "[Ljava/lang/String;");
 		clinit.visitInsn(RETURN);
-		return clinit;
 	}
 
 	private void visitInteger(MethodVisitor mv, int i) {

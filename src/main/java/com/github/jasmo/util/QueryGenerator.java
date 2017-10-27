@@ -1,14 +1,15 @@
 package com.github.jasmo.util;
 
-import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.tree.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.TypeVariable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Utility to generate {@link com.github.jasmo.query.QueryUtil#query(Object, String)}
@@ -25,19 +26,15 @@ public class QueryGenerator {
 				LabelNode.class, LdcInsnNode.class, LineNumberNode.class, LookupSwitchInsnNode.class,
 				MethodInsnNode.class, MultiANewArrayInsnNode.class, TableSwitchInsnNode.class,
 				TypeInsnNode.class, VarInsnNode.class);
-		try {
-			System.out.println("\tpublic static Object query(Object o, String key) {");
-			for (Class type : types) {
-				lookup(type);
-			}
-			System.out.println("\t\treturn null;");
-			System.out.println("\t}");
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
+		System.out.println("\tpublic static Object query(Object o, String key) {");
+		for (Class type : types) {
+			lookup(type);
 		}
+		System.out.println("\t\treturn null;");
+		System.out.println("\t}");
 	}
 
-	private static void lookup(Class<?> type) throws ReflectiveOperationException {
+	private static void lookup(Class<?> type) {
 		System.out.println("\t\tif (o instanceof " + type.getName() + ") {");
 		System.out.println("\t\t\t" + type.getName() + " b = (" + type.getName() + ") o;");
 		Field[] fields = type.getDeclaredFields();

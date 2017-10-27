@@ -1,10 +1,10 @@
 package com.github.jasmo.obfuscate;
 
+import com.github.jasmo.util.BytecodeHelper;
 import com.github.jasmo.util.JRE;
 import com.github.jasmo.util.UniqueString;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.commons.*;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
@@ -61,8 +61,8 @@ public class ScrambleMethods implements Processor {
 				// push interfaces
 				Set<ClassNode> interfaces = new HashSet<>();
 				String[] interfacesNames = node.interfaces.toArray(new String[node.interfaces.size()]);
-				for (int i = 0; i < interfacesNames.length; i++) {
-					ClassNode iface = getClassNode(interfacesNames[i]);
+				for (String iname : interfacesNames) {
+					ClassNode iface = getClassNode(iname);
 					if (iface != null) {
 						interfaces.add(iface);
 					}
@@ -86,14 +86,7 @@ public class ScrambleMethods implements Processor {
 				});
 			}
 		}
-		// apply transformation
-		SimpleRemapper remapper = new SimpleRemapper(mappings);
-		for (ClassNode node : new ArrayList<>(classMap.values())) {
-			ClassNode clone = new ClassNode();
-			ClassRemapper adapter = new ClassRemapper(clone, remapper);
-			node.accept(adapter);
-			classMap.put(node.name, clone);
-		}
+		BytecodeHelper.applyMappings(classMap, mappings);
 	}
 
 	private MethodNode getMethod(ClassNode node, String name, String desc) {
