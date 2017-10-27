@@ -1,12 +1,12 @@
 package com.github.jasmo.obfuscate;
 
-import com.github.jasmo.util.IO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
@@ -35,7 +35,14 @@ public class Obfuscator {
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
 			try (InputStream in = jar.getInputStream(entry)) {
-				byte[] bytes = IO.read(in);
+				byte[] bytes;
+				try (ByteArrayOutputStream tmp = new ByteArrayOutputStream()) {
+					byte[] buf = new byte[256];
+					for (int n; (n = in.read(buf)) != -1; ) {
+						tmp.write(buf, 0, n);
+					}
+					bytes = tmp.toByteArray();
+				}
 				if (!entry.getName().endsWith(".class")) {
 					getFiles().put(entry.getName(), bytes);
 					continue;

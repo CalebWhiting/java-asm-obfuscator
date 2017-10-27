@@ -11,7 +11,7 @@ import java.util.Arrays;
  */
 public class QueryUtil {
 
-	public static boolean isEqual(Object o, Object value) {
+	private static boolean isEqual(Object o, Object value) {
 		if (value != null && value instanceof AnyOf) {
 			for (Object ob : ((AnyOf) value).values()) {
 				if (isEqual(o, ob))
