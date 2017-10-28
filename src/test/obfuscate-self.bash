@@ -7,9 +7,6 @@ then
 fi
 mvn package
 jar=target/java-asm-obfuscator-*.jar
-if [ "${OSTYPE}" == linux* ] || [ "${OSTYPE}" == darwin* ] || [ "${OSTYPE}" == freebsd* ]; then
-    chmod 777 ${jar}
-fi
 java -jar ${jar} \
      --verbose \
      --cfn 3 \
