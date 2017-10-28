@@ -7,12 +7,12 @@ usage: java -jar jasmo.jar <src> <dest> [-h] [-k <arg>] [-p <arg>] [-v]
  -k,--keep <arg>      Don't rename this class
  -p,--package <arg>   Move obfuscated classes to this package
  -v,--verbose         Increase verbosity
- ```
+```
  
 Current Obfuscators:
 -
+
 <dl>
-    
     <dt>Inline Accessors<br></dt>
     <dd>Removes get/set methods, replacing them with direct field access</dd>
     
@@ -30,5 +30,4 @@ Current Obfuscators:
     
     <dt>Scramble Strings</dt>
     <dd>Replaces string constants with an "unscramble" method</dd>
-
 </dl>
