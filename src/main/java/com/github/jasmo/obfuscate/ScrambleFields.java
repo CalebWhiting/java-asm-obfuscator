@@ -1,7 +1,7 @@
 package com.github.jasmo.obfuscate;
 
 import com.github.jasmo.util.BytecodeHelper;
-import com.github.jasmo.util.UniqueString;
+import com.github.jasmo.util.UniqueStringGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.*;
@@ -14,17 +14,22 @@ import java.util.stream.*;
  */
 public class ScrambleFields implements Processor {
 	private static final Logger log = LogManager.getLogger(ScrambleFields.class);
+	private final UniqueStringGenerator generator;
+
+	public ScrambleFields(UniqueStringGenerator generator) {
+		this.generator = generator;
+	}
 
 	@Override
 	public void process(Map<String, ClassNode> classMap) {
 		Map<String, String> remap = new HashMap<>();
-		UniqueString.reset();
+		generator.reset();
 		List<FieldNode> fields = new ArrayList<>();
 		for (ClassNode c : classMap.values()) fields.addAll(c.fields);
 		Collections.shuffle(fields);
 		for (FieldNode f : fields) {
 			ClassNode c = getOwner(f, classMap);
-			String name = UniqueString.next();
+			String name = generator.next();
 			Stack<ClassNode> stack = new Stack<>();
 			stack.add(c);
 			while (stack.size() > 0) {

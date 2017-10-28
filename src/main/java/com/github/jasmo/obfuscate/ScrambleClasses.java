@@ -1,7 +1,7 @@
 package com.github.jasmo.obfuscate;
 
 import com.github.jasmo.util.BytecodeHelper;
-import com.github.jasmo.util.UniqueString;
+import com.github.jasmo.util.UniqueStringGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.tree.*;
@@ -15,10 +15,12 @@ public class ScrambleClasses implements Processor {
 
 	private static final Logger log = LogManager.getLogger(ScrambleClasses.class);
 
+	private UniqueStringGenerator generator;
 	private final String basePackage;
 	private final List<String> skip;
 
-	public ScrambleClasses(String basePackage, String... skip) {
+	public ScrambleClasses(UniqueStringGenerator generator, String basePackage, String... skip) {
+		this.generator = generator;
 		this.basePackage = basePackage.replace('.', '/');
 		for (int i = 0; i < skip.length; i++) {
 			skip[i] = skip[i].replace('.', '/');
@@ -28,7 +30,7 @@ public class ScrambleClasses implements Processor {
 
 	@Override
 	public void process(Map<String, ClassNode> classMap) {
-		UniqueString.reset();
+		generator.reset();
 		Map<String, String> remap = new HashMap<>();
 		List<String> keys = new ArrayList<>(classMap.keySet());
 		// shuffle order in which names are assigned
@@ -38,7 +40,7 @@ public class ScrambleClasses implements Processor {
 			ClassNode cn = classMap.get(key);
 			String name = cn.name;
 			if (!skip.contains(name)) {
-				name = UniqueString.next();
+				name = generator.next();
 				name = basePackage + "/" + name;
 			}
 			remap.put(cn.name, name);

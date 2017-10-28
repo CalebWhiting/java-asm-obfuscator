@@ -2,7 +2,7 @@ package com.github.jasmo.obfuscate;
 
 import com.github.jasmo.util.BytecodeHelper;
 import com.github.jasmo.util.JRE;
-import com.github.jasmo.util.UniqueString;
+import com.github.jasmo.util.UniqueStringGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.Opcodes;
@@ -22,6 +22,11 @@ public class ScrambleMethods implements Processor {
 
 	private JRE env;
 	private Map<String, ClassNode> classMap;
+	private final UniqueStringGenerator generator;
+
+	public ScrambleMethods(UniqueStringGenerator generator) {
+		this.generator = generator;
+	}
 
 	@Override
 	public void process(Map<String, ClassNode> classMap) {
@@ -31,7 +36,7 @@ public class ScrambleMethods implements Processor {
 		// todo: add more in-depth verification
 		List<String> pass = Arrays.asList("main", "<init>", "<clinit>", "createUI");
 		// reset the unique string generator, so that is starts at 'a'
-		UniqueString.reset();
+		generator.reset();
 		Map<String, String> mappings = new HashMap<>();
 		List<MethodNode> methods = new LinkedList<>();
 		for (ClassNode c : classMap.values())
@@ -71,7 +76,7 @@ public class ScrambleMethods implements Processor {
 				stack.addAll(interfaces);
 			}
 			// generate obfuscated name
-			String name = UniqueString.next();
+			String name = generator.next();
 			log.debug("Mapping method {}.{}{} to {}.{}{}", owner.name, m.name, m.desc, owner.name, name, m.desc);
 			stack.add(owner);
 			// go through all sub-classes, and define the new name

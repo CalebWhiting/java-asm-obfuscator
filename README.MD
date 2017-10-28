@@ -2,7 +2,8 @@
 Obfuscates compiled java code to make it harder to reverse engineer.
 
 ```text
-usage: java -jar jasmo.jar <src> <dest> [-h] [-k <arg>] [-p <arg>] [-v]
+usage: java -jar jasmo.jar <src> <dest> [-c <arg>] [-h] [-k <arg>] [-p <arg>] [-v]
+ -c,--cfn <arg>       Enable 'crazy fucking names and set name length (large names == large output size)'
  -h,--help            Print help message
  -k,--keep <arg>      Don't rename this class
  -p,--package <arg>   Move obfuscated classes to this package

@@ -1,6 +1,7 @@
 package com.github.jasmo;
 
 import com.github.jasmo.obfuscate.*;
+import com.github.jasmo.util.UniqueStringGenerator;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,7 @@ public class Bootstrap {
 		Options options = new Options()
 				                  .addOption("h", "help", false, "Print help message")
 				                  .addOption("v", "verbose", false, "Increase verbosity")
+				                  .addOption("c", "cfn", true, "Enable 'crazy fucking names and set name length (large names == large output size)'")
 				                  .addOption("p", "package", true, "Move obfuscated classes to this package")
 				                  .addOption("k", "keep", true, "Don't rename this class")
 				                  .addOption("v", "verbose", false, "Increase verbosity");
@@ -49,10 +51,17 @@ public class Bootstrap {
 				return;
 			}
 			try {
+				UniqueStringGenerator usg;
+				if (cl.hasOption("cfn")) {
+					int size = Integer.parseInt(cl.getOptionValue("cfn"));
+					usg = new UniqueStringGenerator.Crazy(size);
+				} else {
+					usg = new UniqueStringGenerator.Default();
+				}
 				o.apply(new ScrambleStrings());
-				o.apply(new ScrambleClasses(cl.getOptionValue("package", ""), keep == null ? new String[0] : keep));
-				o.apply(new ScrambleFields());
-				o.apply(new ScrambleMethods());
+				o.apply(new ScrambleClasses(usg, cl.getOptionValue("package", ""), keep == null ? new String[0] : keep));
+				o.apply(new ScrambleFields(usg));
+				o.apply(new ScrambleMethods(usg));
 				o.apply(new InlineAccessors());
 				o.apply(new RemoveDebugInfo());
 			} catch (Exception e) {
