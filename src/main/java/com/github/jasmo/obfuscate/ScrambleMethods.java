@@ -3,9 +3,9 @@ package com.github.jasmo.obfuscate;
 import com.github.jasmo.util.BytecodeHelper;
 import com.github.jasmo.util.JRE;
 import com.github.jasmo.util.UniqueString;
-import jdk.internal.org.objectweb.asm.Opcodes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;

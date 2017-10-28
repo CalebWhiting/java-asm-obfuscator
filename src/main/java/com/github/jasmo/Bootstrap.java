@@ -73,7 +73,7 @@ public class Bootstrap {
 
 	private static void help(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("java -jar java-asm-obfuscator.jar <options>... <source> <destination>", options, true);
+		formatter.printHelp("java -jar jasmo.jar <src> <dest>", options, true);
 	}
 
 }

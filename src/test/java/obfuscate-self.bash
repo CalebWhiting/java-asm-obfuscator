@@ -6,9 +6,10 @@ then
     exit -1
 fi
 mvn package
-java -jar target/java-asm-obfuscator-*.jar \
+jar=target/java-asm-obfuscator-*.jar
+java -jar ${jar} \
      --verbose \
-     --keep com/github/jasmo/Bootstrap \
+     --keep com/github/jasmo/Bootstrap --keep com/github/jasmo/util/QueryGenerator \
      --package com/github/jasmo \
-     target/classes \
+     ${jar} \
      target/result.jar
