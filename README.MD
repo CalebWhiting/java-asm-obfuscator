@@ -14,6 +14,8 @@ Current Obfuscators:
 -
 
 <dl>
+    <dt>Shuffle Members<br></dt>
+    <dd>Shuffles the order of classes, methods, fields, annotations, interfaces, exceptions etc</dd>
     <dt>Inline Accessors<br></dt>
     <dd>Removes get/set methods, replacing them with direct field access</dd>
     <dt>Remove Debug Information</dt>

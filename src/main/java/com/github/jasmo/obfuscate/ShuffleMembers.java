@@ -3,8 +3,10 @@ package com.github.jasmo.obfuscate;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class ShuffleMembers implements Processor  {
@@ -14,35 +16,40 @@ public class ShuffleMembers implements Processor  {
 	@Override
 	public void process(Map<String, ClassNode> classMap) {
 		classMap.values().forEach(c -> {
-			Collections.shuffle(c.fields);
-			Collections.shuffle(c.methods);
-			Collections.shuffle(c.innerClasses);
-			Collections.shuffle(c.interfaces);
-			Collections.shuffle(c.attrs);
-			Collections.shuffle(c.invisibleAnnotations);
-			Collections.shuffle(c.visibleAnnotations);
-			Collections.shuffle(c.invisibleTypeAnnotations);
-			Collections.shuffle(c.visibleTypeAnnotations);
+			shuffle(c.fields);
+			shuffle(c.methods);
+			shuffle(c.innerClasses);
+			shuffle(c.interfaces);
+			shuffle(c.attrs);
+			shuffle(c.invisibleAnnotations);
+			shuffle(c.visibleAnnotations);
+			shuffle(c.invisibleTypeAnnotations);
+			shuffle(c.visibleTypeAnnotations);
 			c.fields.forEach(f -> {
-				Collections.shuffle(f.attrs);
-				Collections.shuffle(f.invisibleAnnotations);
-				Collections.shuffle(f.visibleAnnotations);
-				Collections.shuffle(f.invisibleTypeAnnotations);
-				Collections.shuffle(f.visibleTypeAnnotations);
+				shuffle(f.attrs);
+				shuffle(f.invisibleAnnotations);
+				shuffle(f.visibleAnnotations);
+				shuffle(f.invisibleTypeAnnotations);
+				shuffle(f.visibleTypeAnnotations);
 			});
 			c.methods.forEach(m -> {
-				Collections.shuffle(m.attrs);
-				Collections.shuffle(m.invisibleAnnotations);
-				Collections.shuffle(m.visibleAnnotations);
-				Collections.shuffle(m.invisibleTypeAnnotations);
-				Collections.shuffle(m.visibleTypeAnnotations);
-				Collections.shuffle(m.exceptions);
-				Collections.shuffle(m.invisibleLocalVariableAnnotations);
-				Collections.shuffle(m.visibleLocalVariableAnnotations);
-				Collections.shuffle(m.localVariables);
-				Collections.shuffle(m.parameters);
+				shuffle(m.attrs);
+				shuffle(m.invisibleAnnotations);
+				shuffle(m.visibleAnnotations);
+				shuffle(m.invisibleTypeAnnotations);
+				shuffle(m.visibleTypeAnnotations);
+				shuffle(m.exceptions);
+				shuffle(m.invisibleLocalVariableAnnotations);
+				shuffle(m.visibleLocalVariableAnnotations);
+				shuffle(m.localVariables);
+				shuffle(m.parameters);
 			});
+			c.innerClasses.clear();
 		});
+	}
+
+	private void shuffle(List<?> list) {
+		if (list!=null)Collections.shuffle(list);
 	}
 
 }

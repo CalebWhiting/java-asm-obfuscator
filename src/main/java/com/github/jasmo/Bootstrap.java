@@ -65,6 +65,7 @@ public class Bootstrap {
 				o.apply(new ScrambleMethods(usg));
 				o.apply(new InlineAccessors());
 				o.apply(new RemoveDebugInfo());
+				o.apply(new ShuffleMembers());
 			} catch (Exception e) {
 				log.error("An error occurred while applying transform", e);
 				return;
