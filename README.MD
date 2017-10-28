@@ -32,4 +32,3 @@ Current Obfuscators:
     <dd>Replaces string constants with an "unscramble" method</dd>
 
 </dl>
--
