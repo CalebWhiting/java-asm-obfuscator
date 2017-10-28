@@ -58,6 +58,7 @@ public class Bootstrap {
 				} else {
 					usg = new UniqueStringGenerator.Default();
 				}
+				o.apply(new FullAccessFlags());
 				o.apply(new ScrambleStrings());
 				o.apply(new ScrambleClasses(usg, cl.getOptionValue("package", ""), keep == null ? new String[0] : keep));
 				o.apply(new ScrambleFields(usg));

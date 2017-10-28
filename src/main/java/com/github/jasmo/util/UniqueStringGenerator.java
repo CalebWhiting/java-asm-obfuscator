@@ -21,8 +21,7 @@ public interface UniqueStringGenerator {
 
 		private static final Random rng = new Random();
 		private final byte[] buffer;
-		/* I know the odds of reusing a name but ya'know...*/
-		private final Set<Integer> used = new HashSet<>();
+		private final Set<String> used = new HashSet<>();
 
 		public Crazy(int size) {
 			buffer = new byte[size];
@@ -39,8 +38,8 @@ public interface UniqueStringGenerator {
 				int low = 127; /* Skip alphabetical/numeric/descriptor special chars etc */
 				buffer[i] = (byte) (low + ((byte) rng.nextInt(255-low)));
 			}
-			Integer hash = Arrays.hashCode(buffer);
-			return used.add(hash) ? new String(buffer, 0, buffer.length) : next();
+			String s = new String(buffer, 0, buffer.length);
+			return used.add(s) ? s : next();
 		}
 	}
 

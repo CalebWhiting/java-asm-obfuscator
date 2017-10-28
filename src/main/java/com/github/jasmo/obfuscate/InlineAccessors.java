@@ -27,7 +27,6 @@ public class InlineAccessors implements Processor {
 		this.classMap = classMap;
 		for (ClassNode node : new ArrayList<>(classMap.values())) {
 			for (FieldNode field : node.fields) {
-				field.access = publicize(field.access);
 				for (MethodNode method : new ArrayList<>(node.methods)) {
 					if (isGetterFor(node, field, method)) {
 						node.methods.remove(method);
@@ -182,14 +181,6 @@ public class InlineAccessors implements Processor {
 
 	private boolean local(int access) {
 		return (access & Opcodes.ACC_STATIC) == 0;
-	}
-
-	private int publicize(int access) {
-		int publicize = Opcodes.ACC_PUBLIC;
-		if (Modifier.isStatic(access)) {
-			publicize |= Opcodes.ACC_STATIC;
-		}
-		return publicize;
 	}
 
 }
