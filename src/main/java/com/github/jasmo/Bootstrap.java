@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 
 public class Bootstrap {
 
-	private static final Logger log = LogManager.getLogger(Bootstrap.class);
+	private static final Logger log = LogManager.getLogger("Bootstrap");
 
 	public static void main(String[] args) {
 		Options options = new Options()

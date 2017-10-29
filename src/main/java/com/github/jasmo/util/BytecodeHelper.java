@@ -1,5 +1,7 @@
 package com.github.jasmo.util;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.commons.ClassRemapper;
 import org.objectweb.asm.commons.SimpleRemapper;
 import org.objectweb.asm.tree.*;
@@ -9,6 +11,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class BytecodeHelper {
+
+	private static final Logger log = LogManager.getLogger("BytecodeHelper");
 
 	public static MethodNode getMethod(ClassNode node, String name, String desc) {
 		return node.methods.stream()
@@ -27,8 +31,8 @@ public class BytecodeHelper {
 	}
 
 	public static <T extends AbstractInsnNode> void forEach(InsnList instructions,
-	                           Class<T> type,
-	                           Consumer<T> consumer) {
+	                                                        Class<T> type,
+	                                                        Consumer<T> consumer) {
 		AbstractInsnNode[] array = instructions.toArray();
 		for (AbstractInsnNode node : array) {
 			if (node.getClass() == type) {
@@ -43,6 +47,22 @@ public class BytecodeHelper {
 	}
 
 	public static void applyMappings(Map<String, ClassNode> classMap, Map<String, String> remap) {
+		log.debug("Applying mappings [");
+		for (Map.Entry<String, String> entry : remap.entrySet()) {
+			String k = entry.getKey();
+			String v = entry.getValue();
+			if (k.equals(v))
+				continue;
+			// skip members with same name
+			// field format =   [ "<owner>.<name>"          : "<newname>" ]
+			// method format =  [ "<owner>.<name> <desc>"   : "<newname>" ]
+			int n = k.indexOf('.');
+			if (n != -1 && v.length() >= n && v.substring(n).equals(k)) {
+				continue;
+			}
+			log.debug(" Map {} to {}", entry.getKey(), entry.getValue());
+		}
+		log.debug("]");
 		SimpleRemapper remapper = new SimpleRemapper(remap);
 		for (ClassNode node : new ArrayList<>(classMap.values())) {
 			ClassNode copy = new ClassNode();

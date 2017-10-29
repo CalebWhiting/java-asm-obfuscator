@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class ScrambleClasses implements Processor {
 
-	private static final Logger log = LogManager.getLogger(ScrambleClasses.class);
+	private static final Logger log = LogManager.getLogger("ScrambleClasses");
 
 	private UniqueStringGenerator generator;
 	private final String basePackage;

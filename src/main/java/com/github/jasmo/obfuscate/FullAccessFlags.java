@@ -7,9 +7,12 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.util.Map;
 
+/**
+ * Some transforms require all fields to be public, in order to remove accessors or move package etc
+ */
 public class FullAccessFlags implements Processor {
 
-	private static final Logger log = LogManager.getLogger(FullAccessFlags.class);
+	private static final Logger log = LogManager.getLogger("FullAccessFlags");
 
 	@Override
 	public void process(Map<String, ClassNode> classMap) {

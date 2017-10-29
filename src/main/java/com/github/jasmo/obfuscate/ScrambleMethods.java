@@ -18,7 +18,7 @@ import java.util.function.*;
  */
 public class ScrambleMethods implements Processor {
 
-	private static final Logger log = LogManager.getLogger(ScrambleMethods.class);
+	private static final Logger log = LogManager.getLogger("ScrambleMethods");
 
 	private JRE env;
 	private Map<String, ClassNode> classMap;
@@ -34,7 +34,7 @@ public class ScrambleMethods implements Processor {
 		// loads all jre libraries from 'java.class.path' system property
 		this.env = JRE.getJRE();
 		// todo: add more in-depth verification
-		List<String> pass = Arrays.asList("main", "<init>", "<clinit>", "createUI");
+		List<String> pass = Arrays.asList("main", "createUI");
 		// reset the unique string generator, so that is starts at 'a'
 		generator.reset();
 		Map<String, String> mappings = new HashMap<>();
@@ -48,7 +48,7 @@ public class ScrambleMethods implements Processor {
 		for (MethodNode m : methods) {
 			ClassNode owner = getOwner(m);
 			// skip entry points, constructors etc
-			if (pass.contains(m.name) || (m.access & Opcodes.ACC_NATIVE) != 0) {
+			if (m.name.indexOf('<') != -1 || pass.contains(m.name) || (m.access & Opcodes.ACC_NATIVE) != 0) {
 				log.debug("Skipping method: {}.{}{}", owner.name, m.name, m.desc);
 				continue;
 			}
@@ -77,7 +77,6 @@ public class ScrambleMethods implements Processor {
 			}
 			// generate obfuscated name
 			String name = generator.next();
-			log.debug("Mapping method {}.{}{} to {}.{}{}", owner.name, m.name, m.desc, owner.name, name, m.desc);
 			stack.add(owner);
 			// go through all sub-classes, and define the new name
 			// regardless of if the method exists in the given class or not

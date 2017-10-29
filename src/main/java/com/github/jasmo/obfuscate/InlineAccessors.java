@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class InlineAccessors implements Processor {
 
-	private static final Logger log = LogManager.getLogger(InlineAccessors.class);
+	private static final Logger log = LogManager.getLogger("InlineAccessors");
 
 	private Map<String, ClassNode> classMap;
 

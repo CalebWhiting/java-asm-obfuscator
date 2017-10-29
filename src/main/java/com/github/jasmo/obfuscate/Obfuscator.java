@@ -21,7 +21,7 @@ import java.util.jar.JarOutputStream;
  */
 public class Obfuscator {
 
-	private static final Logger log = LogManager.getLogger(Obfuscator.class);
+	private static final Logger log = LogManager.getLogger("Obfuscator");
 
 	private final Map<String, ClassNode> classMap = new HashMap<>();
 	private final Map<String, byte[]> files = new HashMap<>();
@@ -30,7 +30,6 @@ public class Obfuscator {
 	private int writeFlags = ClassWriter.COMPUTE_MAXS;
 
 	private void supplyJar(JarFile jar) {
-		log.debug("Supplying jar file: {}", jar.toString());
 		Enumeration<JarEntry> entries = jar.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
