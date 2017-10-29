@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class RemoveDebugInfo implements Processor {
 
-	private static final Logger log = LogManager.getLogger(RemoveDebugInfo.class);
+	private static final Logger log = LogManager.getLogger("RemoveDebugInfo");
 
 	@Override
 	public void process(Map<String, ClassNode> classMap) {

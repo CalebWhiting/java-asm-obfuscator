@@ -13,7 +13,7 @@ import java.util.stream.*;
  * @author Caleb Whiting
  */
 public class ScrambleFields implements Processor {
-	private static final Logger log = LogManager.getLogger(ScrambleFields.class);
+	private static final Logger log = LogManager.getLogger("ScrambleFields");
 	private final UniqueStringGenerator generator;
 
 	public ScrambleFields(UniqueStringGenerator generator) {
@@ -36,7 +36,6 @@ public class ScrambleFields implements Processor {
 				ClassNode node = stack.pop();
 				String key = node.name + "." + f.name;
 				remap.put(key, name);
-				log.debug("Mapping field {}.{} to {}.{}", node.name, f.name, node.name, name);
 				stack.addAll(classMap.values().stream().
 						filter(cn -> cn.superName.equals(node.name)).
 						                     collect(Collectors.toList()));

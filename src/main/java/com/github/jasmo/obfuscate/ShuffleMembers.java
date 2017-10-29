@@ -1,17 +1,12 @@
 package com.github.jasmo.obfuscate;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class ShuffleMembers implements Processor  {
-
-	private static final Logger log = LogManager.getLogger(ShuffleMembers.class);
 
 	@Override
 	public void process(Map<String, ClassNode> classMap) {

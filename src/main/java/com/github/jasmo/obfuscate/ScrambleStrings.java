@@ -3,7 +3,11 @@ package com.github.jasmo.obfuscate;
 import com.github.jasmo.util.BytecodeHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.objectweb.asm.*;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.InstructionAdapter;
+import org.objectweb.asm.commons.StaticInitMerger;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
@@ -15,7 +19,7 @@ import static org.objectweb.asm.Opcodes.*;
  */
 public class ScrambleStrings implements Processor {
 
-	private static final Logger log = LogManager.getLogger(ScrambleStrings.class);
+	private static final Logger log = LogManager.getLogger("ScrambleStrings");
 
 	private static final String FIELD_NAME = "string_store";
 	private static final String CALL_NAME = "unscramble";
@@ -52,7 +56,7 @@ public class ScrambleStrings implements Processor {
 
 	private void scramble(ClassNode cn, MethodNode mn) {
 		List<LdcInsnNode> ldcNodes = new LinkedList<>();
-		BytecodeHelper.forEach(mn.instructions, LdcInsnNode.class, ldcNodes:: add);
+		BytecodeHelper.forEach(mn.instructions, LdcInsnNode.class, ldcNodes::add);
 		for (LdcInsnNode node : ldcNodes) {
 			if (node.cst instanceof String) {
 				int index = indexOf(strings, node.cst);
@@ -80,24 +84,26 @@ public class ScrambleStrings implements Processor {
 	}
 
 	private void createStaticConstructor(ClassNode owner) {
-		MethodNode clinit = BytecodeHelper.getMethod(owner, "<clinit>", "()V");
-		if (clinit == null) {
-			clinit = new MethodNode(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
-			owner.methods.add(clinit);
-		}
-		AbstractInsnNode last = clinit.instructions.getLast();
-		if (last != null && last.getOpcode() == Opcodes.RETURN)
-			clinit.instructions.remove(last);
-		visitInteger(clinit, strings.length);
-		clinit.visitTypeInsn(ANEWARRAY, "java/lang/String");
+		MethodNode original = BytecodeHelper.getMethod(owner, "<clinit>", "()V");
+		MethodVisitor mv = owner.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+		// generate instructions
+		InstructionAdapter builder = new InstructionAdapter(mv);
+		builder.iconst(strings.length);
+		builder.newarray(Type.getType(String.class));
 		for (int i = 0; i < strings.length; i++) {
-			clinit.visitInsn(DUP);
-			visitInteger(clinit, i);
-			clinit.visitLdcInsn(strings[i]);
-			clinit.visitInsn(AASTORE);
+			builder.dup();
+			builder.iconst(i);
+			builder.aconst(strings[i]);
+			builder.astore(InstructionAdapter.OBJECT_TYPE);
 		}
-		clinit.visitFieldInsn(PUTSTATIC, callOwner.name, FIELD_NAME, "[Ljava/lang/String;");
-		clinit.visitInsn(RETURN);
+		builder.putstatic(callOwner.name, FIELD_NAME, "[Ljava/lang/String;");
+		if (original != null) {
+			// original should already end with RETURN
+			owner.methods.remove(original);
+			original.instructions.accept(builder);
+		} else {
+			builder.areturn(Type.VOID_TYPE);
+		}
 	}
 
 	private void visitInteger(MethodVisitor mv, int i) {

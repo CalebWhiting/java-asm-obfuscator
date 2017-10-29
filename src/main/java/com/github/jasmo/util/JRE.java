@@ -14,7 +14,7 @@ import java.util.jar.*;
  */
 public class JRE {
 
-	private static final Logger log = LogManager.getLogger(JRE.class);
+	private static final Logger log = LogManager.getLogger("JRE");
 
 	private static JRE jre;
 	private final Map<String, ClassNode> classMap = new HashMap<>();

@@ -9,7 +9,6 @@ mvn package
 jar=target/java-asm-obfuscator-*.jar
 java -jar ${jar} \
      --verbose \
-     --cfn 3 \
      --keep com/github/jasmo/Bootstrap --keep com/github/jasmo/util/QueryGenerator \
      --package com/github/jasmo \
      ${jar} \
