@@ -22,8 +22,7 @@ public class Bootstrap {
 				                  .addOption("v", "verbose", false, "Increase verbosity")
 				                  .addOption("c", "cfn", true, "Enable 'crazy fucking names and set name length (large names == large output size)'")
 				                  .addOption("p", "package", true, "Move obfuscated classes to this package")
-				                  .addOption("k", "keep", true, "Don't rename this class")
-				                  .addOption("v", "verbose", false, "Increase verbosity");
+				                  .addOption("k", "keep", true, "Don't rename this class");
 		try {
 			CommandLineParser clp = new DefaultParser();
 			CommandLine cl = clp.parse(options, args);
