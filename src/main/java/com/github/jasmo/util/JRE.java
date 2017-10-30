@@ -48,6 +48,7 @@ public class JRE {
 						classMap.put(c.name, c);
 					}
 				}
+				jar.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
