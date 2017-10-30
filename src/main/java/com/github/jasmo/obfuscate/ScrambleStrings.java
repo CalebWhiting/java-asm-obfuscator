@@ -7,7 +7,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.InstructionAdapter;
-import org.objectweb.asm.commons.StaticInitMerger;
 import org.objectweb.asm.tree.*;
 
 import java.util.*;
@@ -17,7 +16,7 @@ import static org.objectweb.asm.Opcodes.*;
 /**
  * @author Caleb Whiting
  */
-public class ScrambleStrings implements Processor {
+public class ScrambleStrings implements Transformer {
 
 	private static final Logger log = LogManager.getLogger("ScrambleStrings");
 
@@ -29,7 +28,7 @@ public class ScrambleStrings implements Processor {
 	private String[] strings;
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		callOwner = (ClassNode) classMap.values().toArray()[new Random().nextInt(classMap.size())];
 		log.debug("Adding unscramble method to {}.{}{}", callOwner.name, CALL_NAME, CALL_DESC);
 		List<String> stringList = new ArrayList<>();

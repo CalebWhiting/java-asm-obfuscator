@@ -94,8 +94,8 @@ public class Obfuscator {
 		});
 	}
 
-	public void apply(Processor processor) {
-		processor.process(getClassMap());
+	public void apply(Transformer transformer) {
+		transformer.transform(getClassMap());
 		// re-populate class map, so that any changed names are registered
 		List<ClassNode> values = new ArrayList<>(getClassMap().values());
 		getClassMap().clear();

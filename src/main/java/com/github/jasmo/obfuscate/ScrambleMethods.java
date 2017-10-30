@@ -16,7 +16,7 @@ import java.util.function.*;
  *         <p>
  *         Obfuscates the names of methods in the given library
  */
-public class ScrambleMethods implements Processor {
+public class ScrambleMethods implements Transformer {
 
 	private static final Logger log = LogManager.getLogger("ScrambleMethods");
 
@@ -29,7 +29,7 @@ public class ScrambleMethods implements Processor {
 	}
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		this.classMap = classMap;
 		// loads all jre libraries from 'java.class.path' system property
 		this.env = ClassPath.getInstance();

@@ -10,12 +10,12 @@ import java.util.*;
 /**
  * @author Caleb Whiting
  */
-public class RemoveDebugInfo implements Processor {
+public class RemoveDebugInfo implements Transformer {
 
 	private static final Logger log = LogManager.getLogger("RemoveDebugInfo");
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		Map<String, ClassNode> map = new HashMap<>();
 		for (ClassNode cn : classMap.values()) {
 			log.debug("Removing debug info from class: {}", cn.name);

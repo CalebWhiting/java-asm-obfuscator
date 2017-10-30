@@ -12,7 +12,7 @@ import java.util.stream.*;
 /**
  * @author Caleb Whiting
  */
-public class ScrambleFields implements Processor {
+public class ScrambleFields implements Transformer {
 	private static final Logger log = LogManager.getLogger("ScrambleFields");
 	private final UniqueStringGenerator generator;
 
@@ -21,7 +21,7 @@ public class ScrambleFields implements Processor {
 	}
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		Map<String, String> remap = new HashMap<>();
 		generator.reset();
 		List<FieldNode> fields = new ArrayList<>();
