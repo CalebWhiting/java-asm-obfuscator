@@ -1,7 +1,7 @@
 package com.github.jasmo.obfuscate;
 
 import com.github.jasmo.util.BytecodeHelper;
-import com.github.jasmo.util.JRE;
+import com.github.jasmo.util.ClassPath;
 import com.github.jasmo.util.UniqueStringGenerator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +20,7 @@ public class ScrambleMethods implements Processor {
 
 	private static final Logger log = LogManager.getLogger("ScrambleMethods");
 
-	private JRE env;
+	private ClassPath env;
 	private Map<String, ClassNode> classMap;
 	private final UniqueStringGenerator generator;
 
@@ -32,7 +32,7 @@ public class ScrambleMethods implements Processor {
 	public void process(Map<String, ClassNode> classMap) {
 		this.classMap = classMap;
 		// loads all jre libraries from 'java.class.path' system property
-		this.env = JRE.getJRE();
+		this.env = ClassPath.getInstance();
 		// todo: add more in-depth verification
 		List<String> pass = Arrays.asList("main", "createUI");
 		// reset the unique string generator, so that is starts at 'a'
@@ -101,7 +101,7 @@ public class ScrambleMethods implements Processor {
 	private ClassNode getClassNode(String name) {
 		if (name == null) return null;
 		ClassNode n = classMap.get(name);
-		return n == null ? env.getClassMap().get(name) : n;
+		return n == null ? env.get(name) : n;
 	}
 
 	private ClassNode getOwner(MethodNode m) {

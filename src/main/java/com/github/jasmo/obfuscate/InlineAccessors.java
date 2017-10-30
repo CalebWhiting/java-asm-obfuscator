@@ -3,7 +3,7 @@ package com.github.jasmo.obfuscate;
 import com.github.jasmo.query.Query;
 import com.github.jasmo.query.QueryUtil;
 import com.github.jasmo.util.BytecodeHelper;
-import com.github.jasmo.util.JRE;
+import com.github.jasmo.util.ClassPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.*;
@@ -167,7 +167,7 @@ public class InlineAccessors implements Processor {
 		ClassNode c = classMap.get(name);
 		if (c != null)
 			return c;
-		return JRE.getJRE().getClassMap().get(name);
+		return ClassPath.getInstance().get(name);
 	}
 
 	private List<AbstractInsnNode> getRealInstructions(MethodNode method) {
