@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ShuffleMembers implements Processor  {
+public class ShuffleMembers implements Transformer {
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		classMap.values().forEach(c -> {
 			shuffle(c.fields);
 			shuffle(c.methods);

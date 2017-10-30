@@ -16,14 +16,14 @@ import java.util.*;
 /**
  * @author Caleb Whiting
  */
-public class InlineAccessors implements Processor {
+public class InlineAccessors implements Transformer {
 
 	private static final Logger log = LogManager.getLogger("InlineAccessors");
 
 	private Map<String, ClassNode> classMap;
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		this.classMap = classMap;
 		for (ClassNode node : new ArrayList<>(classMap.values())) {
 			for (FieldNode field : node.fields) {

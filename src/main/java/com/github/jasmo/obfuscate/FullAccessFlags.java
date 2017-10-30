@@ -10,12 +10,12 @@ import java.util.Map;
 /**
  * Some transforms require all fields to be public, in order to remove accessors or move package etc
  */
-public class FullAccessFlags implements Processor {
+public class FullAccessFlags implements Transformer {
 
 	private static final Logger log = LogManager.getLogger("FullAccessFlags");
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		classMap.values().forEach(c -> {
 			c.access = access(c.access);
 			c.methods.forEach(m -> m.access = access(m.access));

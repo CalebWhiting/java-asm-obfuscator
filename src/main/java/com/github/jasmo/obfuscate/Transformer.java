@@ -7,8 +7,8 @@ import java.util.*;
 /**
  * @author Caleb Whiting
  */
-public interface Processor {
+public interface Transformer {
 
-	void process(Map<String, ClassNode> classMap);
+	void transform(Map<String, ClassNode> classMap);
 
 }

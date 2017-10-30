@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * @author Caleb Whiting
  */
-public class ScrambleClasses implements Processor {
+public class ScrambleClasses implements Transformer {
 
 	private static final Logger log = LogManager.getLogger("ScrambleClasses");
 
@@ -29,7 +29,7 @@ public class ScrambleClasses implements Processor {
 	}
 
 	@Override
-	public void process(Map<String, ClassNode> classMap) {
+	public void transform(Map<String, ClassNode> classMap) {
 		generator.reset();
 		Map<String, String> remap = new HashMap<>();
 		List<String> keys = new ArrayList<>(classMap.keySet());
