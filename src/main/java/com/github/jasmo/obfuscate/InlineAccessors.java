@@ -137,9 +137,6 @@ public class InlineAccessors implements Transformer {
 		if (list.size() != queries.length) return false;
 		for (int i = 0; i < list.size(); i++) {
 			AbstractInsnNode node = list.get(i);
-			/*if (!node.check(queries[i].values())) {
-				return false;
-			}*/
 			if (!QueryUtil.check(node, queries[i].values())) {
 				return false;
 			}

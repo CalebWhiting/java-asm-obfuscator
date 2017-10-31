@@ -7,43 +7,20 @@
 
 package com.github.jasmo.obfuscate;
 
-import static org.objectweb.asm.Opcodes.AALOAD;
-import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ACC_STATIC;
-import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.DUP;
-import static org.objectweb.asm.Opcodes.GETSTATIC;
-import static org.objectweb.asm.Opcodes.ILOAD;
-import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
-import static org.objectweb.asm.Opcodes.INVOKESTATIC;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.NEW;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.github.jasmo.util.BytecodeHelper;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.InstructionAdapter;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.IntInsnNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.*;
 
-import com.github.jasmo.util.BytecodeHelper;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import static org.objectweb.asm.Opcodes.*;
 
 /**
  * @author Caleb Whiting
@@ -56,37 +33,38 @@ public class ScrambleStrings implements Transformer {
 	private static final String CALL_NAME = "unscramble";
 	private static final String CALL_DESC = "(I)Ljava/lang/String;";
 
-	private ClassNode callOwner;
-	private String[] strings;
+	private ClassNode unscrambleClass;
+	private List<String> stringList;
 
 	@Override
 	public void transform(Map<String, ClassNode> classMap) {
-		callOwner = (ClassNode) classMap.values().toArray()[new Random().nextInt(classMap.size())];
-		log.debug("Adding unscramble method to {}.{}{}", callOwner.name, CALL_NAME, CALL_DESC);
-		List<String> stringList = new ArrayList<>();
-		for (ClassNode cn : classMap.values()) {
-			for (MethodNode mn : cn.methods) {
-				BytecodeHelper.forEach(mn.instructions, LdcInsnNode.class, ldc -> {
-					// noinspection SuspiciousMethodCalls
-					if (ldc.cst instanceof String && !stringList.contains(ldc.cst)) {
-						stringList.add((String) ldc.cst);
-					}
-				});
-			}
-		}
+		stringList = new ArrayList<>();
+		unscrambleClass = (ClassNode) classMap.values().toArray()[new Random().nextInt(classMap.size())];
+		// Build string list
+		log.debug("Building string list");
+		classMap.values().stream().flatMap(cn -> cn.methods.stream()).forEach(this::buildStringList);
 		Collections.shuffle(stringList);
-		strings = stringList.toArray(new String[stringList.size()]);
-		for (ClassNode cn : classMap.values()) {
-			cn.methods.forEach(mn -> scramble(cn, mn));
-		}
-		callOwner.methods.add(getUnscramble());
-		callOwner.fields.add(new FieldNode(ACC_PUBLIC | ACC_STATIC, FIELD_NAME, "[Ljava/lang/String;", null, null));
+		// Replace LDC constants with calls to unscramble
+		log.debug("Scrambling LDC constants");
+		classMap.values().forEach(cn -> cn.methods.forEach(mn -> scramble(cn, mn)));
+		// Add unscrambling handler
 		log.debug("Creating {} field containing {} strings", FIELD_NAME, stringList.size());
+		unscrambleClass.visitField(ACC_PUBLIC | ACC_STATIC, FIELD_NAME, "[Ljava/lang/String;", null, null);
+		log.debug("Adding unscramble method to {}.{}{}", unscrambleClass.name, CALL_NAME, CALL_DESC);
+		createUnscramble();
 		try {
-			createStaticConstructor(callOwner);
+			createStaticConstructor(unscrambleClass);
 		} catch (Exception ex) {
 			log.warn("Failed to transform strings", ex);
 		}
+	}
+
+	private void buildStringList(MethodNode mn) {
+		BytecodeHelper.forEach(mn.instructions, LdcInsnNode.class, ldc -> {
+			if (ldc.cst instanceof String && !stringList.contains(ldc.cst)) {
+				stringList.add((String) ldc.cst);
+			}
+		});
 	}
 
 	private void scramble(ClassNode cn, MethodNode mn) {
@@ -94,34 +72,31 @@ public class ScrambleStrings implements Transformer {
 		BytecodeHelper.forEach(mn.instructions, LdcInsnNode.class, ldcNodes::add);
 		for (LdcInsnNode node : ldcNodes) {
 			if (node.cst instanceof String) {
-				int index = indexOf(strings, node.cst);
+				int index = stringList.indexOf(node.cst);
 				if (index == -1)
 					continue;
-				log.debug("Replacing string \"{}\" at {}.{}{} with {}.{}.{}", node.cst, cn.name, mn.name, mn.desc,
-						callOwner.name, CALL_NAME, CALL_DESC);
-				MethodInsnNode call = new MethodInsnNode(Opcodes.INVOKESTATIC, callOwner.name, CALL_NAME, CALL_DESC,
-						false);
+				log.debug("Replacing string constant \"{}\" at {}.{}{}", node.cst, cn.name, mn.name, mn.desc);
+				MethodInsnNode call = new MethodInsnNode(Opcodes.INVOKESTATIC, unscrambleClass.name, CALL_NAME, CALL_DESC, false);
 				mn.instructions.set(node, call);
 				mn.instructions.insertBefore(call, getIntegerNode(index));
 			}
 		}
 	}
 
-	private MethodNode getUnscramble() {
-		MethodNode mv = new MethodNode(ACC_PUBLIC | ACC_STATIC, CALL_NAME, CALL_DESC, null, null);
+	private void createUnscramble() {
+		MethodVisitor mv = unscrambleClass.visitMethod(ACC_PUBLIC | ACC_STATIC, CALL_NAME, CALL_DESC, null, null);
 		mv.visitCode();
 		mv.visitTypeInsn(NEW, "java/lang/String");
 		mv.visitInsn(DUP);
-		mv.visitMethodInsn(INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;");
-		mv.visitFieldInsn(GETSTATIC, callOwner.name, FIELD_NAME, "[Ljava/lang/String;");
+		mv.visitMethodInsn(INVOKESTATIC, "java/util/Base64", "getDecoder", "()Ljava/util/Base64$Decoder;", false);
+		mv.visitFieldInsn(GETSTATIC, unscrambleClass.name, FIELD_NAME, "[Ljava/lang/String;");
 		mv.visitVarInsn(ILOAD, 0);
 		mv.visitInsn(AALOAD);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B");
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V");
+		mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B", false);
+		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V", false);
 		mv.visitInsn(ARETURN);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
-		return mv;
 	}
 
 	private void createStaticConstructor(ClassNode owner) throws UnsupportedEncodingException {
@@ -129,35 +104,22 @@ public class ScrambleStrings implements Transformer {
 		MethodVisitor mv = owner.visitMethod(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
 		// generate instructions
 		InstructionAdapter builder = new InstructionAdapter(mv);
-		builder.iconst(strings.length);
+		builder.iconst(stringList.size());
 		builder.newarray(Type.getType(String.class));
-		for (int i = 0; i < strings.length; i++) {
+		for (int i = 0; i < stringList.size(); i++) {
 			builder.dup();
 			builder.iconst(i);
-			builder.aconst(Base64.getEncoder().encodeToString(strings[i].getBytes("UTF-8")));
+			builder.aconst(Base64.getEncoder().encodeToString(stringList.get(i).getBytes("UTF-8")));
 			builder.astore(InstructionAdapter.OBJECT_TYPE);
 		}
-		builder.putstatic(callOwner.name, FIELD_NAME, "[Ljava/lang/String;");
+		builder.putstatic(unscrambleClass.name, FIELD_NAME, "[Ljava/lang/String;");
+		// merge with original if it exists
 		if (original != null) {
 			// original should already end with RETURN
 			owner.methods.remove(original);
 			original.instructions.accept(builder);
 		} else {
 			builder.areturn(Type.VOID_TYPE);
-		}
-	}
-
-	private void visitInteger(MethodVisitor mv, int i) {
-		if (i >= -1 && i <= 5) {
-			mv.visitInsn(Opcodes.ICONST_0 + i);
-		} else {
-			if (i >= Byte.MIN_VALUE && i <= Byte.MAX_VALUE) {
-				mv.visitIntInsn(Opcodes.BIPUSH, i);
-			} else if (i >= Short.MIN_VALUE && i <= Short.MAX_VALUE) {
-				mv.visitIntInsn(Opcodes.SIPUSH, i);
-			} else {
-				mv.visitLdcInsn(i);
-			}
 		}
 	}
 
@@ -174,14 +136,5 @@ public class ScrambleStrings implements Transformer {
 			}
 		}
 	}
-
-	private int indexOf(Object[] array, Object value) {
-		for (int i = 0; i < array.length; i++) {
-			if (value == array[i] || value.equals(array[i])) {
-				return i;
-			}
-		}
-		return -1;
-	}
-
+	
 }
