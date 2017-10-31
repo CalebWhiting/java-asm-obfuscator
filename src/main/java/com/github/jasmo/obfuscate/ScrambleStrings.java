@@ -78,7 +78,7 @@ public class ScrambleStrings implements Transformer {
 				log.debug("Replacing string constant \"{}\" at {}.{}{}", node.cst, cn.name, mn.name, mn.desc);
 				MethodInsnNode call = new MethodInsnNode(Opcodes.INVOKESTATIC, unscrambleClass.name, CALL_NAME, CALL_DESC, false);
 				mn.instructions.set(node, call);
-				mn.instructions.insertBefore(call, getIntegerNode(index));
+				mn.instructions.insertBefore(call, BytecodeHelper.newIntegerNode(index));
 			}
 		}
 	}
@@ -123,18 +123,4 @@ public class ScrambleStrings implements Transformer {
 		}
 	}
 
-	private AbstractInsnNode getIntegerNode(int i) {
-		if (i >= -1 && i <= 5) {
-			return new InsnNode(Opcodes.ICONST_0 + i);
-		} else {
-			if (i >= Byte.MIN_VALUE && i <= Byte.MAX_VALUE) {
-				return new IntInsnNode(Opcodes.BIPUSH, i);
-			} else if (i >= Short.MIN_VALUE && i <= Short.MAX_VALUE) {
-				return new IntInsnNode(Opcodes.SIPUSH, i);
-			} else {
-				return new LdcInsnNode(i);
-			}
-		}
-	}
-	
 }
