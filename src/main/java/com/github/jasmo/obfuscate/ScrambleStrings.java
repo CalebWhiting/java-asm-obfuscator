@@ -82,7 +82,7 @@ public class ScrambleStrings implements Transformer {
 			}
 		}
 	}
-
+	
 	private void createUnscramble() {
 		MethodVisitor mv = unscrambleClass.visitMethod(ACC_PUBLIC | ACC_STATIC, CALL_NAME, CALL_DESC, null, null);
 		mv.visitCode();
@@ -93,7 +93,8 @@ public class ScrambleStrings implements Transformer {
 		mv.visitVarInsn(ILOAD, 0);
 		mv.visitInsn(AALOAD);
 		mv.visitMethodInsn(INVOKEVIRTUAL, "java/util/Base64$Decoder", "decode", "(Ljava/lang/String;)[B", false);
-		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "([B)V", false);
+		mv.visitLdcInsn("UTF-8");
+		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/String", "<init>", "([BLjava/lang/String;)V", false);
 		mv.visitInsn(ARETURN);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
