@@ -39,7 +39,9 @@ public class ScrambleStrings implements Transformer {
 	@Override
 	public void transform(Map<String, ClassNode> classMap) {
 		stringList = new ArrayList<>();
-		unscrambleClass = (ClassNode) classMap.values().toArray()[new Random().nextInt(classMap.size())];
+		do {
+			unscrambleClass = (ClassNode) classMap.values().toArray()[new Random().nextInt(classMap.size())];
+		} while ((unscrambleClass.access & Opcodes.ACC_INTERFACE) != 0);
 		// Build string list
 		log.debug("Building string list");
 		classMap.values().stream().flatMap(cn -> cn.methods.stream()).forEach(this::buildStringList);
