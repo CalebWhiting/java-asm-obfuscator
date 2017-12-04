@@ -38,4 +38,4 @@ The project includes two test scripts in the 'test/' directory
 
 ***
 
-For analyzing obfuscated code I suggest using [https://github.com/Konloch/bytecode-viewer](url), it merges many java reverse engineering tools into one and includes many useful features.
+For analyzing obfuscated code I suggest using [bytecode-viewer](https://github.com/Konloch/bytecode-viewer), it merges many java reverse engineering tools into one and includes many useful features.
